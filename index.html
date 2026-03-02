@@ -4,1085 +4,253 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Elysium Hookah Lounge — Members Portal</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --black: #080604;
-    --deep: #0f0c08;
-    --charcoal: #1a1510;
-    --charcoal2: #252018;
-    --gold: #C9A84C;
-    --gold-light: #E8C96A;
-    --gold-pale: #F4E4A8;
-    --ivory: #F5EDD8;
-    --ivory-dim: #C8BAA0;
-    --red-ember: #8B2A1A;
-    --smoke: rgba(201,168,76,0.07);
-    --glow: 0 0 40px rgba(201,168,76,0.15);
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--black);
-    color: var(--ivory);
-    font-family: 'Raleway', sans-serif;
-    font-weight: 300;
-    overflow-x: hidden;
-    cursor: default;
-  }
-
-  /* ── GRAIN OVERLAY ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-    opacity: 0.03;
-    pointer-events: none;
-    z-index: 9999;
-  }
-
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--deep); }
-  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
-
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 60px;
-    height: 80px;
-    background: linear-gradient(to bottom, rgba(8,6,4,0.98), transparent);
-    backdrop-filter: blur(8px);
-  }
-
-  .nav-logo {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    letter-spacing: 0.35em;
-    color: var(--gold);
-    text-transform: uppercase;
-  }
-
-  .nav-logo span { display: block; font-size: 9px; letter-spacing: 0.6em; color: var(--ivory-dim); margin-top: 2px; }
-
-  .nav-links { display: flex; gap: 40px; align-items: center; }
-  .nav-links a {
-    font-family: 'Raleway', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: var(--ivory-dim);
-    text-decoration: none;
-    transition: color 0.3s;
-  }
-  .nav-links a:hover { color: var(--gold); }
-
-  .nav-cta {
-    background: transparent;
-    border: 1px solid var(--gold);
-    color: var(--gold) !important;
-    padding: 8px 24px;
-    font-size: 9px !important;
-    letter-spacing: 0.45em !important;
-    cursor: pointer;
-    transition: all 0.3s !important;
-  }
-  .nav-cta:hover { background: var(--gold) !important; color: var(--black) !important; }
-
-  /* ── HERO ── */
-  #hero {
-    position: relative;
-    height: 100vh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    text-align: center;
-    overflow: hidden;
-  }
-
-  .hero-bg {
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 80%, rgba(139,42,26,0.18) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 50% 50%, rgba(201,168,76,0.08) 0%, transparent 55%),
-      radial-gradient(ellipse 100% 100% at 50% 0%, rgba(25,18,8,0.9) 0%, var(--black) 100%);
-  }
-
-  .smoke-particle {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
-    animation: drift linear infinite;
-    pointer-events: none;
-  }
-
-  @keyframes drift {
-    0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 0.5; }
-    100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
-  }
-
-  .hero-ornament {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 11px;
-    letter-spacing: 0.6em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 28px;
-    opacity: 0;
-    animation: fadeUp 1s 0.3s forwards;
-  }
-
-  .hero-title {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(48px, 8vw, 100px);
-    font-weight: 400;
-    line-height: 0.95;
-    letter-spacing: 0.05em;
-    color: var(--ivory);
-    opacity: 0;
-    animation: fadeUp 1.2s 0.5s forwards;
-    position: relative;
-  }
-
-  .hero-title em {
-    font-style: italic;
-    font-family: 'Cormorant Garamond', serif;
-    color: var(--gold);
-    font-size: 1.1em;
-    display: block;
-  }
-
-  .hero-sub {
-    margin-top: 28px;
-    font-size: 11px;
-    letter-spacing: 0.5em;
-    color: var(--ivory-dim);
-    text-transform: uppercase;
-    max-width: 500px;
-    line-height: 2;
-    opacity: 0;
-    animation: fadeUp 1s 0.8s forwards;
-  }
-
-  .hero-divider {
-    width: 1px; height: 60px;
-    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
-    margin: 36px auto;
-    opacity: 0;
-    animation: fadeUp 1s 1s forwards;
-  }
-
-  .btn-primary {
-    display: inline-block;
-    background: var(--gold);
-    color: var(--black);
-    font-family: 'Cinzel', serif;
-    font-size: 10px;
-    letter-spacing: 0.45em;
-    text-transform: uppercase;
-    padding: 16px 48px;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.4s;
-    position: relative;
-    overflow: hidden;
-    opacity: 0;
-    animation: fadeUp 1s 1.1s forwards;
-  }
-
-  .btn-primary::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: var(--gold-light);
-    transform: translateX(-100%);
-    transition: transform 0.4s;
-  }
-
-  .btn-primary:hover::before { transform: translateX(0); }
-  .btn-primary span { position: relative; z-index: 1; }
-
-  .btn-outline {
-    display: inline-block;
-    background: transparent;
-    color: var(--gold);
-    font-family: 'Cinzel', serif;
-    font-size: 10px;
-    letter-spacing: 0.45em;
-    text-transform: uppercase;
-    padding: 15px 48px;
-    border: 1px solid var(--gold);
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.4s;
-  }
-  .btn-outline:hover { background: var(--gold); color: var(--black); }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .hero-scroll {
-    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
-    font-size: 8px; letter-spacing: 0.5em; color: var(--ivory-dim);
-    opacity: 0; animation: fadeUp 1s 1.5s forwards;
-  }
-  .hero-scroll::after {
-    content: '';
-    display: block; width: 1px; height: 40px;
-    background: linear-gradient(to bottom, var(--gold), transparent);
-    animation: scrollPulse 2s infinite;
-  }
-  @keyframes scrollPulse {
-    0%, 100% { opacity: 0.4; transform: scaleY(1); }
-    50% { opacity: 1; transform: scaleY(1.1); }
-  }
-
-  /* ── SECTIONS ── */
-  section { padding: 120px 80px; }
-
-  .section-label {
-    font-size: 9px;
-    letter-spacing: 0.6em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 16px;
-  }
-
-  .section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(32px, 4vw, 52px);
-    font-weight: 300;
-    line-height: 1.15;
-    color: var(--ivory);
-    margin-bottom: 20px;
-  }
-
-  .section-title strong {
-    font-weight: 500;
-    font-style: italic;
-    color: var(--gold-pale);
-  }
-
-  .gold-line {
-    width: 60px; height: 1px;
-    background: linear-gradient(to right, var(--gold), transparent);
-    margin-bottom: 40px;
-  }
-
-  /* ── EXPERIENCE ── */
-  #experience { background: var(--deep); }
-
-  .exp-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--charcoal);
-    margin-top: 60px;
-    border: 1px solid var(--charcoal);
-  }
-
-  .exp-card {
-    background: var(--deep);
-    padding: 48px 40px;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.4s;
-  }
-
-  .exp-card::before {
-    content: '';
-    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(to right, transparent, var(--gold), transparent);
-    transform: scaleX(0); transition: transform 0.4s;
-  }
-
-  .exp-card:hover { background: var(--charcoal2); }
-  .exp-card:hover::before { transform: scaleX(1); }
-
-  .exp-icon {
-    font-size: 32px;
-    margin-bottom: 24px;
-    display: block;
-  }
-
-  .exp-card h3 {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    letter-spacing: 0.3em;
-    color: var(--gold);
-    margin-bottom: 16px;
-  }
-
-  .exp-card p {
-    font-size: 13px;
-    line-height: 1.9;
-    color: var(--ivory-dim);
-  }
-
-  /* ── MEMBERSHIPS ── */
-  #membership { background: var(--black); }
-
-  .mem-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-top: 60px;
-  }
-
-  .mem-card {
-    border: 1px solid var(--charcoal);
-    padding: 48px 36px;
-    position: relative;
-    transition: border-color 0.3s;
-    cursor: pointer;
-  }
-
-  .mem-card.featured {
-    border-color: var(--gold);
-    background: linear-gradient(135deg, var(--charcoal2) 0%, rgba(201,168,76,0.05) 100%);
-  }
-
-  .mem-card .badge {
-    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-    background: var(--gold);
-    color: var(--black);
-    font-family: 'Cinzel', serif;
-    font-size: 8px;
-    letter-spacing: 0.4em;
-    padding: 4px 20px;
-    white-space: nowrap;
-  }
-
-  .mem-tier {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 0.5em;
-    color: var(--gold);
-    margin-bottom: 8px;
-  }
-
-  .mem-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 36px;
-    font-weight: 300;
-    color: var(--ivory);
-    margin-bottom: 24px;
-  }
-
-  .mem-price {
-    font-size: 13px;
-    color: var(--ivory-dim);
-    margin-bottom: 32px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid var(--charcoal);
-  }
-
-  .mem-price strong {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 48px;
-    color: var(--gold-pale);
-    font-weight: 300;
-    display: block;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  .mem-perks { list-style: none; margin-bottom: 40px; }
-  .mem-perks li {
-    font-size: 12px;
-    color: var(--ivory-dim);
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(201,168,76,0.1);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .mem-perks li::before {
-    content: '◆';
-    font-size: 6px;
-    color: var(--gold);
-    flex-shrink: 0;
-  }
-
-  /* ── BOOKING PLATFORM ── */
-  #booking {
-    background: var(--deep);
-    padding: 0;
-  }
-
-  .booking-header {
-    text-align: center;
-    padding: 100px 80px 60px;
-    background: linear-gradient(to bottom, var(--black), var(--deep));
-  }
-
-  /* BOOKING WIZARD */
-  .wizard-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 80px 100px;
-  }
-
-  /* Progress */
-  .progress-bar {
-    display: flex;
-    align-items: center;
-    margin-bottom: 64px;
-    position: relative;
-  }
-
-  .progress-bar::before {
-    content: '';
-    position: absolute;
-    top: 20px; left: 40px; right: 40px; height: 1px;
-    background: var(--charcoal);
-  }
-
-  .progress-track {
-    position: absolute;
-    top: 20px; left: 40px; height: 1px;
-    background: var(--gold);
-    transition: width 0.6s ease;
-  }
-
-  .step-indicator {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    position: relative;
-    cursor: pointer;
-  }
-
-  .step-dot {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    border: 1px solid var(--charcoal);
-    background: var(--deep);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    color: var(--ivory-dim);
-    transition: all 0.4s;
-    position: relative;
-    z-index: 2;
-  }
-
-  .step-dot.active {
-    border-color: var(--gold);
-    background: var(--gold);
-    color: var(--black);
-  }
-
-  .step-dot.completed {
-    border-color: var(--gold);
-    background: transparent;
-    color: var(--gold);
-  }
-
-  .step-label {
-    font-size: 8px;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--ivory-dim);
-    white-space: nowrap;
-  }
-
-  .step-dot.active + .step-label { color: var(--gold); }
-
-  /* Step Panels */
-  .step-panel { display: none; }
-  .step-panel.active { display: block; animation: fadeUp 0.5s ease forwards; }
-
-  .panel-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 32px;
-    font-weight: 300;
-    color: var(--ivory);
-    margin-bottom: 8px;
-  }
-
-  .panel-subtitle {
-    font-size: 11px;
-    color: var(--ivory-dim);
-    letter-spacing: 0.2em;
-    margin-bottom: 40px;
-  }
-
-  /* STEP 1 - DATE & TIME */
-  .date-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-bottom: 40px;
-  }
-
-  .date-btn {
-    background: var(--charcoal);
-    border: 1px solid transparent;
-    padding: 12px 6px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    color: var(--ivory);
-  }
-
-  .date-btn:hover { border-color: var(--gold); }
-
-  .date-btn.selected {
-    background: var(--gold);
-    color: var(--black);
-  }
-
-  .date-btn.disabled { opacity: 0.3; cursor: not-allowed; }
-
-  .date-day { font-size: 8px; letter-spacing: 0.3em; color: inherit; opacity: 0.7; }
-  .date-num { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; }
-
-  .time-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 40px;
-  }
-
-  .time-btn {
-    background: var(--charcoal);
-    border: 1px solid transparent;
-    padding: 14px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    color: var(--ivory);
-  }
-
-  .time-btn span { display: block; font-family: 'Raleway', sans-serif; font-size: 8px; letter-spacing: 0.3em; color: var(--ivory-dim); margin-top: 4px; }
-  .time-btn:hover { border-color: var(--gold); }
-  .time-btn.selected { background: var(--gold); color: var(--black); }
-  .time-btn.selected span { color: var(--black); }
-  .time-btn.limited span { color: #E8A84C; }
-
-  /* STEP 2 - SEAT SELECT */
-  .floor-plan {
-    background: var(--charcoal);
-    border: 1px solid var(--charcoal2);
-    padding: 40px;
-    position: relative;
-    margin-bottom: 32px;
-  }
-
-  .floor-label {
-    font-size: 8px;
-    letter-spacing: 0.5em;
-    color: var(--ivory-dim);
-    text-align: center;
-    margin-bottom: 24px;
-    text-transform: uppercase;
-  }
-
-  .zone {
-    margin-bottom: 32px;
-  }
-
-  .zone-label {
-    font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: 0.4em;
-    color: var(--gold);
-    margin-bottom: 16px;
-    text-transform: uppercase;
-  }
-
-  .seats-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-
-  .seat {
-    width: 52px; height: 52px;
-    border: 1px solid var(--charcoal2);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-    font-size: 8px;
-    letter-spacing: 0.2em;
-    color: var(--ivory-dim);
-    background: var(--deep);
-  }
-
-  .seat:hover:not(.taken) { border-color: var(--gold); color: var(--gold); }
-  .seat.selected { border-color: var(--gold); background: rgba(201,168,76,0.15); color: var(--gold); }
-  .seat.taken { opacity: 0.25; cursor: not-allowed; background: var(--charcoal); }
-  .seat-icon { font-size: 16px; margin-bottom: 2px; }
-  .seat.vip { border-color: rgba(201,168,76,0.3); }
-
-  .seat-legend { display: flex; gap: 24px; margin-top: 16px; }
-  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 10px; color: var(--ivory-dim); }
-  .legend-dot { width: 10px; height: 10px; border: 1px solid; }
-  .legend-dot.available { border-color: var(--charcoal2); background: var(--deep); }
-  .legend-dot.selected-l { border-color: var(--gold); background: rgba(201,168,76,0.15); }
-  .legend-dot.taken-l { background: var(--charcoal); opacity: 0.3; }
-
-  /* STEP 3 - HOOKAH */
-  .hookah-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-
-  .hookah-card {
-    border: 1px solid var(--charcoal);
-    padding: 28px;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hookah-card::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(circle at bottom right, rgba(201,168,76,0.08), transparent 60%);
-    opacity: 0; transition: opacity 0.3s;
-  }
-
-  .hookah-card:hover { border-color: var(--gold); }
-  .hookah-card:hover::after { opacity: 1; }
-  .hookah-card.selected { border-color: var(--gold); background: rgba(201,168,76,0.06); }
-
-  .hookah-card .check {
-    position: absolute; top: 16px; right: 16px;
-    width: 20px; height: 20px;
-    border: 1px solid var(--gold);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; color: var(--gold);
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .hookah-card.selected .check { opacity: 1; }
-
-  .hookah-brand {
-    font-size: 8px; letter-spacing: 0.5em; color: var(--gold); margin-bottom: 6px;
-  }
-
-  .hookah-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px; color: var(--ivory); margin-bottom: 8px;
-  }
-
-  .hookah-desc { font-size: 11px; color: var(--ivory-dim); line-height: 1.7; margin-bottom: 16px; }
-
-  .hookah-price {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px; color: var(--gold-pale);
-  }
-  .hookah-price span { font-family: 'Raleway', sans-serif; font-size: 9px; color: var(--ivory-dim); }
-
-  /* FLAVORS */
-  .flavor-section { margin-top: 40px; }
-  .flavor-section h4 {
-    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.4em;
-    color: var(--gold); margin-bottom: 20px;
-  }
-
-  .flavor-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .flavor-btn {
-    background: var(--charcoal);
-    border: 1px solid transparent;
-    padding: 10px 18px;
-    font-family: 'Raleway', sans-serif;
-    font-size: 11px;
-    color: var(--ivory-dim);
-    cursor: pointer;
-    transition: all 0.3s;
-    letter-spacing: 0.15em;
-  }
-
-  .flavor-btn:hover { border-color: var(--gold); color: var(--gold); }
-  .flavor-btn.selected { border-color: var(--gold); background: rgba(201,168,76,0.12); color: var(--gold); }
-
-  /* STEP 4 - MENU */
-  .menu-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--charcoal);
-    margin-bottom: 32px;
-    gap: 0;
-  }
-
-  .menu-tab {
-    padding: 14px 28px;
-    font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: 0.4em;
-    color: var(--ivory-dim);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: all 0.3s;
-    background: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    text-transform: uppercase;
-  }
-
-  .menu-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
-
-  .menu-panel { display: none; }
-  .menu-panel.active { display: block; }
-
-  .menu-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .menu-item {
-    border: 1px solid var(--charcoal);
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-
-  .menu-item:hover { border-color: rgba(201,168,76,0.4); }
-  .menu-item.selected { border-color: var(--gold); background: rgba(201,168,76,0.05); }
-
-  .menu-emoji { font-size: 28px; flex-shrink: 0; }
-
-  .menu-info { flex: 1; }
-  .menu-name { font-family: 'Cormorant Garamond', serif; font-size: 17px; color: var(--ivory); margin-bottom: 4px; }
-  .menu-desc { font-size: 10px; color: var(--ivory-dim); line-height: 1.6; }
-
-  .menu-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
-
-  .menu-price {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px; color: var(--gold-pale);
-  }
-
-  .qty-control {
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  .qty-btn {
-    width: 24px; height: 24px;
-    border: 1px solid var(--gold);
-    background: none;
-    color: var(--gold);
-    cursor: pointer;
-    font-size: 14px;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-  }
-  .qty-btn:hover { background: var(--gold); color: var(--black); }
-  .qty-num { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--ivory); min-width: 16px; text-align: center; }
-
-  /* STEP 5 - CONFIRM */
-  .confirmation-card {
-    border: 1px solid var(--gold);
-    background: linear-gradient(135deg, var(--charcoal2), rgba(201,168,76,0.04));
-    padding: 48px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .confirmation-card::before {
-    content: 'E';
-    position: absolute; right: -20px; top: -40px;
-    font-family: 'Cinzel', serif;
-    font-size: 200px;
-    color: rgba(201,168,76,0.04);
-    line-height: 1;
-    pointer-events: none;
-  }
-
-  .conf-header {
-    text-align: center;
-    margin-bottom: 48px;
-    padding-bottom: 48px;
-    border-bottom: 1px solid var(--charcoal);
-  }
-
-  .conf-badge {
-    display: inline-block;
-    font-family: 'Cinzel', serif;
-    font-size: 8px;
-    letter-spacing: 0.5em;
-    color: var(--gold);
-    border: 1px solid var(--gold);
-    padding: 6px 24px;
-    margin-bottom: 24px;
-  }
-
-  .conf-id {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 48px;
-    color: var(--gold-pale);
-    letter-spacing: 0.1em;
-  }
-
-  .conf-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
-    margin-bottom: 40px;
-  }
-
-  .conf-item label {
-    font-size: 8px;
-    letter-spacing: 0.4em;
-    color: var(--gold);
-    display: block;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-  }
-
-  .conf-item .value {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
-    color: var(--ivory);
-  }
-
-  .conf-total {
-    border-top: 1px solid var(--charcoal);
-    padding-top: 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 40px;
-  }
-
-  .conf-total label { font-size: 9px; letter-spacing: 0.4em; color: var(--ivory-dim); }
-  .conf-total .total-amt {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 42px; color: var(--gold-pale);
-  }
-
-  .wizard-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 48px;
-    padding-top: 32px;
-    border-top: 1px solid var(--charcoal);
-  }
-
-  .btn-back {
-    background: none;
-    border: 1px solid var(--charcoal);
-    color: var(--ivory-dim);
-    font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: 0.4em;
-    padding: 14px 32px;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-  }
-  .btn-back:hover { border-color: var(--ivory-dim); color: var(--ivory); }
-
-  .btn-next {
-    background: var(--gold);
-    border: none;
-    color: var(--black);
-    font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: 0.4em;
-    padding: 15px 48px;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-    position: relative; overflow: hidden;
-  }
-  .btn-next::before { content: ''; position: absolute; inset: 0; background: var(--gold-light); transform: translateX(-100%); transition: transform 0.3s; }
-  .btn-next:hover::before { transform: translateX(0); }
-  .btn-next span { position: relative; z-index: 1; }
-
-  /* ── LOUNGE FEATURES ── */
-  #features {
-    background: var(--black);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    padding: 0;
-  }
-
-  .feat-visual {
-    background:
-      radial-gradient(ellipse at 30% 70%, rgba(139,42,26,0.3), transparent 50%),
-      radial-gradient(ellipse at 70% 30%, rgba(201,168,76,0.15), transparent 50%),
-      var(--charcoal);
-    min-height: 600px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 80px;
-    letter-spacing: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .feat-visual::after {
-    content: 'ELYSIUM';
-    position: absolute;
-    font-family: 'Cinzel', serif;
-    font-size: 80px;
-    color: rgba(201,168,76,0.06);
-    letter-spacing: 0.3em;
-    white-space: nowrap;
-  }
-
-  .feat-content { padding: 80px; display: flex; flex-direction: column; justify-content: center; }
-  .feat-list { margin-top: 40px; }
-  .feat-list li {
-    display: flex;
-    gap: 20px;
-    padding: 20px 0;
-    border-bottom: 1px solid var(--charcoal);
-    list-style: none;
-  }
-  .feat-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 28px;
-    color: rgba(201,168,76,0.4);
-    flex-shrink: 0;
-    line-height: 1;
-  }
-  .feat-text h4 { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.3em; color: var(--gold); margin-bottom: 6px; }
-  .feat-text p { font-size: 12px; color: var(--ivory-dim); line-height: 1.7; }
-
-  /* ── PARTNERS ── */
-  #partners { background: var(--deep); text-align: center; padding: 80px; }
-  .partners-row { display: flex; align-items: center; justify-content: center; gap: 60px; margin-top: 40px; flex-wrap: wrap; }
-  .partner-badge {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    letter-spacing: 0.3em;
-    color: rgba(201,168,76,0.4);
-    padding: 16px 32px;
-    border: 1px solid rgba(201,168,76,0.15);
-    transition: all 0.3s;
-  }
-  .partner-badge:hover { color: var(--gold); border-color: var(--gold); }
-
-  /* ── FOOTER ── */
-  footer {
-    background: var(--black);
-    border-top: 1px solid var(--charcoal);
-    padding: 60px 80px 40px;
-  }
-
-  .footer-top {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 60px;
-    padding-bottom: 48px;
-    border-bottom: 1px solid var(--charcoal);
-    margin-bottom: 32px;
-  }
-
-  .footer-brand h3 { font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.3em; color: var(--gold); margin-bottom: 8px; }
-  .footer-brand p { font-size: 11px; color: var(--ivory-dim); line-height: 1.8; margin-top: 16px; }
-
-  .footer-col h4 { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.4em; color: var(--gold); margin-bottom: 20px; text-transform: uppercase; }
-  .footer-col a { display: block; font-size: 11px; color: var(--ivory-dim); text-decoration: none; margin-bottom: 10px; transition: color 0.3s; }
-  .footer-col a:hover { color: var(--gold); }
-
-  .footer-bottom { display: flex; justify-content: space-between; align-items: center; }
-  .footer-bottom p { font-size: 10px; color: rgba(200,186,160,0.4); letter-spacing: 0.2em; }
-
-  /* ── SUCCESS STATE ── */
-  .success-screen {
-    display: none;
-    text-align: center;
-    padding: 80px 40px;
-  }
-
-  .success-screen.active { display: block; animation: fadeUp 0.6s forwards; }
-
-  .success-icon {
-    width: 80px; height: 80px;
-    border: 1px solid var(--gold);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 32px;
-    margin: 0 auto 32px;
-    animation: successPop 0.6s 0.3s backwards;
-  }
-
-  @keyframes successPop {
-    0% { transform: scale(0); opacity: 0; }
-    70% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  .success-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 42px; color: var(--ivory); margin-bottom: 16px;
-  }
-
-  .reservation-code {
-    font-family: 'Cinzel', serif;
-    font-size: 24px;
-    letter-spacing: 0.4em;
-    color: var(--gold);
-    border: 1px solid var(--gold);
-    display: inline-block;
-    padding: 16px 48px;
-    margin: 24px 0;
-  }
-
-  /* Responsive */
-  @media (max-width: 900px) {
-    nav { padding: 0 24px; }
-    .nav-links { display: none; }
-    section { padding: 80px 24px; }
-    .exp-grid, .mem-grid { grid-template-columns: 1fr; }
-    .hookah-grid, .menu-grid, .conf-grid { grid-template-columns: 1fr; }
-    #features { grid-template-columns: 1fr; }
-    .feat-visual { min-height: 300px; }
-    .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
-    .wizard-container { padding: 0 24px 80px; }
-    .booking-header { padding: 80px 24px 40px; }
-    .date-grid { grid-template-columns: repeat(4, 1fr); }
-    .time-grid { grid-template-columns: repeat(2, 1fr); }
-    .progress-bar { overflow-x: auto; }
-  }
+:root{--black:#080604;--deep:#0f0c08;--charcoal:#1a1510;--charcoal2:#252018;--gold:#C9A84C;--gold-light:#E8C96A;--gold-pale:#F4E4A8;--ivory:#F5EDD8;--ivory-dim:#C8BAA0;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--ivory);font-family:'Raleway',sans-serif;font-weight:300;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");opacity:0.025;pointer-events:none;z-index:9000;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--deep);}::-webkit-scrollbar-thumb{background:var(--gold);}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 60px;height:80px;background:linear-gradient(to bottom,rgba(8,6,4,0.97),transparent);backdrop-filter:blur(8px);}
+.nav-logo{font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.35em;color:var(--gold);}
+.nav-logo span{display:block;font-size:9px;letter-spacing:0.55em;color:var(--ivory-dim);margin-top:2px;}
+.nav-links{display:flex;gap:36px;align-items:center;}
+.nav-links a{font-size:10px;letter-spacing:0.4em;text-transform:uppercase;color:var(--ivory-dim);text-decoration:none;transition:color 0.3s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-cta{border:1px solid var(--gold)!important;color:var(--gold)!important;padding:8px 22px;font-size:9px!important;transition:all 0.3s!important;}
+.nav-cta:hover{background:var(--gold)!important;color:var(--black)!important;}
+/* HERO */
+#hero{position:relative;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80% 60% at 50% 80%,rgba(139,42,26,0.18) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 50% 50%,rgba(201,168,76,0.08) 0%,transparent 55%),linear-gradient(to bottom,rgba(8,6,4,0.5),var(--black));}
+.smoke-p{position:absolute;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);animation:drift linear infinite;}
+@keyframes drift{0%{transform:translateY(100vh) scale(0.5);opacity:0;}20%{opacity:1;}80%{opacity:0.4;}100%{transform:translateY(-20vh) scale(1.6);opacity:0;}}
+.hero-c{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
+.hero-orn{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.6em;color:var(--gold);text-transform:uppercase;margin-bottom:28px;opacity:0;animation:fadeUp 1s 0.3s forwards;}
+.hero-ttl{font-family:'Cinzel',serif;font-size:clamp(48px,8vw,100px);font-weight:400;line-height:0.95;letter-spacing:0.05em;color:var(--ivory);opacity:0;animation:fadeUp 1.2s 0.5s forwards;}
+.hero-ttl em{font-style:italic;font-family:'Cormorant Garamond',serif;color:var(--gold);font-size:1.1em;display:block;}
+.hero-sub{margin-top:28px;font-size:11px;letter-spacing:0.4em;color:var(--ivory-dim);text-transform:uppercase;max-width:500px;line-height:2;opacity:0;animation:fadeUp 1s 0.8s forwards;}
+.hero-div{width:1px;height:60px;background:linear-gradient(to bottom,transparent,var(--gold),transparent);margin:36px auto;opacity:0;animation:fadeUp 1s 1s forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+.hero-scroll{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:8px;letter-spacing:0.5em;color:var(--ivory-dim);opacity:0;animation:fadeUp 1s 1.5s forwards;pointer-events:none;z-index:2;}
+.hero-scroll::after{content:'';display:block;width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:0.4;}50%{opacity:1;}}
+/* SHARED BUTTONS */
+.btn-g{display:inline-block;background:var(--gold);color:var(--black);font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.45em;text-transform:uppercase;padding:16px 48px;border:none;cursor:pointer;text-decoration:none;transition:background 0.3s;}
+.btn-g:hover{background:var(--gold-light);}
+.btn-g.hanim{opacity:0;animation:fadeUp 1s 1.1s forwards;}
+.btn-ol{display:inline-block;background:transparent;color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.45em;text-transform:uppercase;padding:15px 48px;border:1px solid var(--gold);cursor:pointer;text-decoration:none;transition:all 0.3s;}
+.btn-ol:hover{background:var(--gold);color:var(--black);}
+/* SECTIONS */
+section{padding:120px 80px;}
+.s-label{font-size:9px;letter-spacing:0.6em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+.s-title{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,52px);font-weight:300;line-height:1.15;color:var(--ivory);margin-bottom:20px;}
+.s-title strong{font-weight:500;font-style:italic;color:var(--gold-pale);}
+.g-line{width:60px;height:1px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:40px;}
+/* EXPERIENCE */
+#experience{background:var(--deep);}
+.exp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--charcoal);margin-top:60px;border:1px solid var(--charcoal);}
+.exp-card{background:var(--deep);padding:48px 40px;position:relative;overflow:hidden;transition:background 0.4s;}
+.exp-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform 0.4s;pointer-events:none;}
+.exp-card:hover{background:var(--charcoal2);}
+.exp-card:hover::before{transform:scaleX(1);}
+.exp-ico{font-size:32px;margin-bottom:24px;display:block;}
+.exp-card h3{font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.3em;color:var(--gold);margin-bottom:16px;}
+.exp-card p{font-size:13px;line-height:1.9;color:var(--ivory-dim);}
+/* MEMBERSHIP */
+#membership{background:var(--black);}
+.mem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px;}
+.mem-card{border:1px solid var(--charcoal);padding:48px 36px;position:relative;transition:border-color 0.3s;cursor:pointer;}
+.mem-card.feat{border-color:var(--gold);background:linear-gradient(135deg,var(--charcoal2),rgba(201,168,76,0.05));}
+.mem-bdg{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--black);font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.4em;padding:4px 20px;white-space:nowrap;}
+.mem-tier{font-family:'Cinzel',serif;font-size:11px;letter-spacing:0.5em;color:var(--gold);margin-bottom:8px;}
+.mem-name{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--ivory);margin-bottom:24px;}
+.mem-price{font-size:13px;color:var(--ivory-dim);margin-bottom:32px;padding-bottom:32px;border-bottom:1px solid var(--charcoal);}
+.mem-price strong{font-family:'Cormorant Garamond',serif;font-size:48px;color:var(--gold-pale);font-weight:300;display:block;line-height:1;margin-bottom:4px;}
+.mem-perks{list-style:none;margin-bottom:40px;}
+.mem-perks li{font-size:12px;color:var(--ivory-dim);padding:10px 0;border-bottom:1px solid rgba(201,168,76,0.1);display:flex;align-items:center;gap:12px;}
+.mem-perks li::before{content:'◆';font-size:6px;color:var(--gold);flex-shrink:0;}
+/* BOOKING */
+#booking{background:var(--deep);padding:0;}
+.bk-hdr{text-align:center;padding:100px 80px 60px;background:linear-gradient(to bottom,var(--black),var(--deep));}
+.wiz-wrap{max-width:1000px;margin:0 auto;padding:0 80px 100px;}
+/* PROGRESS */
+.prog-outer{position:relative;margin-bottom:64px;}
+.prog-bg{position:absolute;top:20px;left:40px;right:40px;height:1px;background:var(--charcoal);pointer-events:none;}
+.prog-fill{position:absolute;top:20px;left:40px;height:1px;background:var(--gold);transition:width 0.5s;pointer-events:none;}
+.prog-steps{display:flex;position:relative;}
+.prog-step{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;cursor:pointer;}
+.prog-dot{width:40px;height:40px;border-radius:50%;border:1px solid var(--charcoal);background:var(--deep);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:11px;color:var(--ivory-dim);transition:all 0.4s;position:relative;z-index:2;user-select:none;}
+.prog-dot.act{border-color:var(--gold);background:var(--gold);color:var(--black);}
+.prog-dot.done{border-color:var(--gold);background:transparent;color:var(--gold);}
+.prog-lbl{font-size:8px;letter-spacing:0.35em;text-transform:uppercase;color:var(--ivory-dim);}
+.prog-step.act .prog-lbl{color:var(--gold);}
+/* PANELS */
+.wpanel{display:none;}
+.wpanel.on{display:block;animation:fadeUp 0.4s ease forwards;}
+.p-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--ivory);margin-bottom:8px;}
+.p-sub{font-size:11px;color:var(--ivory-dim);letter-spacing:0.2em;margin-bottom:40px;}
+.p-head4{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.4em;color:var(--gold);margin-bottom:14px;margin-top:32px;text-transform:uppercase;}
+.p-head4:first-of-type{margin-top:0;}
+/* DATE */
+.date-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:8px;}
+.d-btn{background:var(--charcoal);border:1px solid transparent;padding:12px 4px;text-align:center;cursor:pointer;transition:all 0.25s;color:var(--ivory);font-family:'Raleway',sans-serif;width:100%;}
+.d-btn:hover{border-color:var(--gold);}
+.d-btn.on{background:var(--gold);color:var(--black);border-color:var(--gold);}
+.d-day{font-size:8px;letter-spacing:0.2em;opacity:0.7;display:block;}
+.d-num{font-family:'Cormorant Garamond',serif;font-size:22px;display:block;}
+/* TIME */
+.time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px;}
+.t-btn{background:var(--charcoal);border:1px solid transparent;padding:16px 8px;text-align:center;cursor:pointer;transition:all 0.25s;color:var(--ivory);font-family:'Cormorant Garamond',serif;font-size:20px;width:100%;}
+.t-btn .tl{display:block;font-family:'Raleway',sans-serif;font-size:8px;letter-spacing:0.3em;color:var(--ivory-dim);margin-top:5px;}
+.t-btn:hover{border-color:var(--gold);}
+.t-btn.on{background:var(--gold);color:var(--black);}
+.t-btn.on .tl{color:var(--black);}
+/* INFO BOX */
+.ibox{background:var(--charcoal);padding:18px 22px;border-left:2px solid var(--gold);margin-bottom:28px;}
+.ibox p{font-size:11px;color:var(--ivory-dim);line-height:1.8;}
+.ibox .ib-head{color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.3em;}
+/* FLOOR */
+.floor{background:var(--charcoal);border:1px solid var(--charcoal2);padding:36px;margin-bottom:20px;}
+.floor-lbl{font-size:8px;letter-spacing:0.5em;color:var(--ivory-dim);text-align:center;margin-bottom:24px;text-transform:uppercase;}
+.zone{margin-bottom:26px;}
+.z-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.4em;color:var(--gold);margin-bottom:12px;text-transform:uppercase;}
+.seats{display:flex;flex-wrap:wrap;gap:8px;}
+.seat{width:54px;height:54px;border:1px solid var(--charcoal2);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.25s;font-size:8px;letter-spacing:0.15em;color:var(--ivory-dim);background:var(--deep);}
+.seat:hover:not(.tk){border-color:var(--gold);color:var(--gold);}
+.seat.on{border-color:var(--gold);background:rgba(201,168,76,0.15);color:var(--gold);}
+.seat.tk{opacity:0.25;cursor:not-allowed;background:var(--charcoal);}
+.seat.vip{border-color:rgba(201,168,76,0.3);}
+.seat-ico{font-size:15px;margin-bottom:2px;pointer-events:none;}
+.s-legend{display:flex;gap:20px;margin-top:14px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--ivory-dim);}
+.leg-dot{width:10px;height:10px;border:1px solid;}
+.leg-dot.av{border-color:var(--charcoal2);background:var(--deep);}
+.leg-dot.sl{border-color:var(--gold);background:rgba(201,168,76,0.15);}
+.leg-dot.tk{background:var(--charcoal);opacity:0.3;border-color:transparent;}
+.seat-bar{display:none;background:rgba(201,168,76,0.08);border:1px solid var(--gold);padding:16px 20px;margin-bottom:18px;}
+.sb-name{font-family:'Cormorant Garamond',serif;font-size:21px;color:var(--ivory);}
+.sb-sub{font-size:11px;color:var(--ivory-dim);margin-top:3px;}
+/* HOOKAH */
+.hk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:28px;}
+.hk-card{border:1px solid var(--charcoal);padding:24px;cursor:pointer;transition:border-color 0.25s;position:relative;}
+.hk-card:hover{border-color:var(--gold);}
+.hk-card.on{border-color:var(--gold);background:rgba(201,168,76,0.05);}
+.hk-chk{position:absolute;top:12px;right:12px;width:20px;height:20px;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--gold);opacity:0;transition:opacity 0.25s;pointer-events:none;}
+.hk-card.on .hk-chk{opacity:1;}
+.hk-brand{font-size:8px;letter-spacing:0.5em;color:var(--gold);margin-bottom:5px;}
+.hk-name{font-family:'Cormorant Garamond',serif;font-size:21px;color:var(--ivory);margin-bottom:6px;}
+.hk-desc{font-size:11px;color:var(--ivory-dim);line-height:1.7;margin-bottom:12px;}
+.hk-price{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold-pale);}
+.hk-price span{font-family:'Raleway',sans-serif;font-size:9px;color:var(--ivory-dim);}
+/* FLAVORS */
+.flav-sec{margin-top:32px;}
+.flav-sec h4{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.4em;color:var(--gold);margin-bottom:16px;}
+.flav-grid{display:flex;flex-wrap:wrap;gap:10px;}
+.flav-btn{background:var(--charcoal);border:1px solid transparent;padding:10px 18px;font-family:'Raleway',sans-serif;font-size:11px;color:var(--ivory-dim);cursor:pointer;transition:all 0.25s;letter-spacing:0.15em;}
+.flav-btn:hover{border-color:var(--gold);color:var(--gold);}
+.flav-btn.on{border-color:var(--gold);background:rgba(201,168,76,0.12);color:var(--gold);}
+/* MENU */
+.m-tabs{display:flex;border-bottom:1px solid var(--charcoal);margin-bottom:26px;}
+.m-tab{padding:13px 24px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.4em;color:var(--ivory-dim);cursor:pointer;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.25s;background:none;text-transform:uppercase;}
+.m-tab.on{color:var(--gold);border-bottom-color:var(--gold);}
+.m-panel{display:none;}
+.m-panel.on{display:block;}
+.m-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.m-item{border:1px solid var(--charcoal);padding:16px;display:flex;align-items:center;gap:12px;transition:border-color 0.25s;}
+.m-item:hover{border-color:rgba(201,168,76,0.3);}
+.m-item.hi{border-color:rgba(201,168,76,0.5);}
+.m-emo{font-size:26px;flex-shrink:0;pointer-events:none;}
+.m-info{flex:1;}
+.m-name{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--ivory);margin-bottom:3px;}
+.m-desc{font-size:10px;color:var(--ivory-dim);line-height:1.6;}
+.m-right{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0;}
+.m-price{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold-pale);}
+.qty-c{display:flex;align-items:center;gap:7px;}
+.q-btn{width:26px;height:26px;border:1px solid var(--gold);background:none;color:var(--gold);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;line-height:1;flex-shrink:0;}
+.q-btn:hover{background:var(--gold);color:var(--black);}
+.q-num{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--ivory);min-width:18px;text-align:center;}
+/* CONFIRM */
+.cf-card{border:1px solid var(--gold);background:linear-gradient(135deg,var(--charcoal2),rgba(201,168,76,0.04));padding:44px;position:relative;overflow:hidden;}
+.cf-card::before{content:'E';position:absolute;right:-20px;top:-40px;font-family:'Cinzel',serif;font-size:200px;color:rgba(201,168,76,0.04);line-height:1;pointer-events:none;user-select:none;}
+.cf-head{text-align:center;margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid var(--charcoal);}
+.cf-bdg{display:inline-block;font-family:'Cinzel',serif;font-size:8px;letter-spacing:0.5em;color:var(--gold);border:1px solid var(--gold);padding:6px 22px;margin-bottom:20px;}
+.cf-id{font-family:'Cormorant Garamond',serif;font-size:46px;color:var(--gold-pale);letter-spacing:0.1em;}
+.cf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-bottom:32px;}
+.cf-item label{font-size:8px;letter-spacing:0.4em;color:var(--gold);display:block;margin-bottom:6px;text-transform:uppercase;}
+.cf-item .cv{font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--ivory);}
+.cf-tot{border-top:1px solid var(--charcoal);padding-top:26px;display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;}
+.cf-tot label{font-size:9px;letter-spacing:0.4em;color:var(--ivory-dim);}
+.cf-tot .tn{font-family:'Cormorant Garamond',serif;font-size:42px;color:var(--gold-pale);}
+.g-block{background:var(--charcoal);padding:24px;margin-bottom:20px;}
+.g-block h4{font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.4em;color:var(--gold);margin-bottom:16px;}
+.g-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fw label{font-size:9px;letter-spacing:0.3em;color:var(--ivory-dim);display:block;margin-bottom:6px;text-transform:uppercase;}
+.fw input,.fw textarea{width:100%;background:var(--deep);border:1px solid var(--charcoal2);color:var(--ivory);padding:11px 14px;font-family:'Raleway',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;resize:vertical;}
+.fw input:focus,.fw textarea:focus{border-color:var(--gold);}
+.fw.full{grid-column:1/-1;}
+.cf-note{font-size:10px;color:var(--ivory-dim);line-height:1.9;text-align:center;padding:0 16px;}
+/* WIZ NAV */
+.wnav{display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:26px;border-top:1px solid var(--charcoal);}
+.btn-back{background:none;border:1px solid var(--charcoal);color:var(--ivory-dim);font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.4em;padding:13px 28px;cursor:pointer;transition:all 0.25s;text-transform:uppercase;}
+.btn-back:hover{border-color:var(--ivory-dim);color:var(--ivory);}
+.btn-nxt{background:var(--gold);border:none;color:var(--black);font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.4em;padding:14px 44px;cursor:pointer;transition:background 0.25s;text-transform:uppercase;}
+.btn-nxt:hover{background:var(--gold-light);}
+/* SUCCESS */
+.suc-scr{display:none;text-align:center;padding:80px 20px;}
+.suc-scr.on{display:block;animation:fadeUp 0.5s forwards;}
+.suc-ico{width:80px;height:80px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 28px;animation:sPop 0.6s 0.2s both;}
+@keyframes sPop{0%{transform:scale(0);opacity:0;}70%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}
+.suc-ttl{font-family:'Cormorant Garamond',serif;font-size:42px;color:var(--ivory);margin-bottom:14px;}
+.res-code{font-family:'Cinzel',serif;font-size:22px;letter-spacing:0.4em;color:var(--gold);border:1px solid var(--gold);display:inline-block;padding:14px 44px;margin:20px 0;}
+/* FEATURES */
+#features{background:var(--black);display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;}
+.feat-vis{background:radial-gradient(ellipse at 30% 70%,rgba(139,42,26,0.3),transparent 50%),radial-gradient(ellipse at 70% 30%,rgba(201,168,76,0.15),transparent 50%),var(--charcoal);min-height:600px;display:flex;align-items:center;justify-content:center;font-size:70px;letter-spacing:16px;position:relative;overflow:hidden;}
+.feat-vis::after{content:'ELYSIUM';position:absolute;font-family:'Cinzel',serif;font-size:70px;color:rgba(201,168,76,0.05);letter-spacing:0.3em;white-space:nowrap;pointer-events:none;user-select:none;}
+.feat-c{padding:80px;display:flex;flex-direction:column;justify-content:center;}
+.feat-list{margin-top:32px;}
+.feat-list li{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--charcoal);list-style:none;}
+.feat-n{font-family:'Cormorant Garamond',serif;font-size:28px;color:rgba(201,168,76,0.4);flex-shrink:0;line-height:1;}
+.feat-t h4{font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.3em;color:var(--gold);margin-bottom:6px;}
+.feat-t p{font-size:12px;color:var(--ivory-dim);line-height:1.7;}
+/* PARTNERS */
+#partners{background:var(--deep);text-align:center;padding:80px;}
+.p-row{display:flex;align-items:center;justify-content:center;gap:48px;margin-top:36px;flex-wrap:wrap;}
+.p-badge{font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.3em;color:rgba(201,168,76,0.4);padding:14px 28px;border:1px solid rgba(201,168,76,0.15);transition:all 0.3s;}
+.p-badge:hover{color:var(--gold);border-color:var(--gold);}
+/* FOOTER */
+footer{background:var(--black);border-top:1px solid var(--charcoal);padding:60px 80px 40px;}
+.ft{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:56px;padding-bottom:44px;border-bottom:1px solid var(--charcoal);margin-bottom:28px;}
+.fb h3{font-family:'Cinzel',serif;font-size:16px;letter-spacing:0.3em;color:var(--gold);margin-bottom:8px;}
+.fb p{font-size:11px;color:var(--ivory-dim);line-height:1.8;margin-top:14px;}
+.fc h4{font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.4em;color:var(--gold);margin-bottom:18px;text-transform:uppercase;}
+.fc a{display:block;font-size:11px;color:var(--ivory-dim);text-decoration:none;margin-bottom:9px;transition:color 0.3s;}
+.fc a:hover{color:var(--gold);}
+.fbot{display:flex;justify-content:space-between;align-items:center;}
+.fbot p{font-size:10px;color:rgba(200,186,160,0.4);letter-spacing:0.2em;}
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:0 24px;} .nav-links{display:none;}
+  section{padding:70px 24px;}
+  .exp-grid,.mem-grid{grid-template-columns:1fr;}
+  .hk-grid,.m-grid,.cf-grid{grid-template-columns:1fr;}
+  #features{grid-template-columns:1fr;} .feat-vis{min-height:260px;}
+  .ft{grid-template-columns:1fr 1fr;gap:28px;}
+  .wiz-wrap{padding:0 20px 70px;}
+  .bk-hdr{padding:70px 24px 36px;}
+  .date-grid{grid-template-columns:repeat(4,1fr);}
+  .time-grid{grid-template-columns:repeat(2,1fr);}
+  .g-fields{grid-template-columns:1fr;}
+  .wnav{flex-direction:column;gap:12px;}
+  .btn-back,.btn-nxt{width:100%;text-align:center;}
+}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
-  <div class="nav-logo">
-    Elysium
-    <span>Hookah Lounge · Members Only</span>
-  </div>
+  <div class="nav-logo">Elysium<span>Hookah Lounge · Members Only</span></div>
   <div class="nav-links">
     <a href="#experience">Experience</a>
     <a href="#membership">Membership</a>
@@ -1091,1026 +259,519 @@
   </div>
 </nav>
 
-<!-- HERO -->
 <section id="hero">
   <div class="hero-bg"></div>
-  <!-- smoke particles injected by JS -->
-
-  <p class="hero-ornament">Est. 2024 · Dallas, Texas</p>
-  <h1 class="hero-title">
-    Elysium
-    <em>Hookah Lounge</em>
-  </h1>
-  <p class="hero-sub">Where the elite unwind. A private sanctuary of smoke, spirit, and sensation — crafted for those who demand only the finest.</p>
-  <div class="hero-divider"></div>
-  <a href="#booking" class="btn-primary"><span>Reserve Your Evening</span></a>
-
+  <div class="hero-c">
+    <p class="hero-orn">Est. 2024 · Dallas, Texas</p>
+    <h1 class="hero-ttl">Elysium<em>Hookah Lounge</em></h1>
+    <p class="hero-sub">Where the elite unwind. A private sanctuary of smoke, spirit, and sensation.</p>
+    <div class="hero-div"></div>
+    <a href="#booking" class="btn-g hanim">Reserve Your Evening</a>
+  </div>
   <div class="hero-scroll">Scroll</div>
 </section>
 
-<!-- EXPERIENCE -->
 <section id="experience">
-  <div class="section-label">The Elysium Experience</div>
-  <h2 class="section-title">Where luxury<br>meets <strong>ritual</strong></h2>
-  <div class="gold-line"></div>
-
+  <div class="s-label">The Elysium Experience</div>
+  <h2 class="s-title">Where luxury meets <strong>ritual</strong></h2>
+  <div class="g-line"></div>
   <div class="exp-grid">
-    <div class="exp-card">
-      <span class="exp-icon">🌿</span>
-      <h3>Premium Hookah</h3>
-      <p>Curated partnerships with Bonche, Adalya, Al Fakher, and other world-class brands. Hand-packed by our master hookah artisans for an unmatched session.</p>
-    </div>
-    <div class="exp-card">
-      <span class="exp-icon">🍾</span>
-      <h3>Signature Cocktails</h3>
-      <p>An expertly crafted spirits menu featuring rare single-malts, champagnes, and bespoke cocktail programs designed to pair perfectly with your hookah selection.</p>
-    </div>
-    <div class="exp-card">
-      <span class="exp-icon">🥩</span>
-      <h3>Culinary Bites</h3>
-      <p>An elevated finger food menu curated by our executive chef — indulgent small plates designed to complement the evening without interrupting the ambiance.</p>
-    </div>
-    <div class="exp-card">
-      <span class="exp-icon">🪑</span>
-      <h3>Luxury Seating</h3>
-      <p>Intimate VIP booths, semi-private alcoves, and open lounge areas — each meticulously designed for comfort, privacy, and visual grandeur.</p>
-    </div>
-    <div class="exp-card">
-      <span class="exp-icon">🎵</span>
-      <h3>Curated Atmosphere</h3>
-      <p>Live DJ sets on weekends, bespoke playlists on weeknights. A sonic environment as carefully considered as everything else at Elysium.</p>
-    </div>
-    <div class="exp-card">
-      <span class="exp-icon">🛎</span>
-      <h3>Dedicated Concierge</h3>
-      <p>Every member receives a personal host for the evening. Your preferences are remembered. Your experience is always personal, never generic.</p>
-    </div>
+    <div class="exp-card"><span class="exp-ico">🌿</span><h3>Premium Hookah</h3><p>Curated partnerships with Bonche, Adalya, Al Fakher, and other world-class brands. Hand-packed by our master hookah artisans for an unmatched session.</p></div>
+    <div class="exp-card"><span class="exp-ico">🍾</span><h3>Signature Cocktails</h3><p>An expertly crafted spirits menu featuring rare single-malts, champagnes, and bespoke cocktail programs designed to pair perfectly with your hookah selection.</p></div>
+    <div class="exp-card"><span class="exp-ico">🥩</span><h3>Culinary Bites</h3><p>An elevated finger food menu curated by our executive chef — indulgent small plates designed to complement the evening without interrupting the ambiance.</p></div>
+    <div class="exp-card"><span class="exp-ico">🪑</span><h3>Luxury Seating</h3><p>Intimate VIP booths, semi-private alcoves, and open lounge areas — each meticulously designed for comfort, privacy, and visual grandeur.</p></div>
+    <div class="exp-card"><span class="exp-ico">🎵</span><h3>Curated Atmosphere</h3><p>Live DJ sets on weekends, bespoke playlists on weeknights. A sonic environment as carefully considered as everything else at Elysium.</p></div>
+    <div class="exp-card"><span class="exp-ico">🛎</span><h3>Dedicated Concierge</h3><p>Every member receives a personal host for the evening. Your preferences are remembered. Your experience is always personal, never generic.</p></div>
   </div>
 </section>
 
-<!-- MEMBERSHIP -->
 <section id="membership">
   <div style="text-align:center">
-    <div class="section-label" style="justify-content:center;display:flex">Membership Tiers</div>
-    <h2 class="section-title">Choose your <strong>status</strong></h2>
+    <div class="s-label" style="display:inline-block">Membership Tiers</div>
+    <h2 class="s-title">Choose your <strong>status</strong></h2>
     <p style="font-size:12px;color:var(--ivory-dim);max-width:500px;margin:0 auto 16px;line-height:2">All memberships include priority booking, complimentary welcome session, and access to member-only events.</p>
-    <div class="gold-line" style="margin:24px auto 0"></div>
+    <div class="g-line" style="margin:24px auto 0"></div>
   </div>
-
   <div class="mem-grid">
-    <!-- OBSIDIAN -->
-    <div class="mem-card" onclick="scrollToBooking()">
-      <div class="mem-tier">Tier I</div>
-      <div class="mem-name">Obsidian</div>
-      <div class="mem-price">
-        <strong>$299</strong>
-        per month
-      </div>
-      <ul class="mem-perks">
-        <li>4 reserved sessions per month</li>
-        <li>10% discount on all orders</li>
-        <li>Dedicated lounge area access</li>
-        <li>Early booking window (48 hrs)</li>
-        <li>Complimentary hookah on birthday</li>
-      </ul>
-      <button class="btn-outline" style="width:100%;font-size:9px;letter-spacing:0.4em" onclick="scrollToBooking()">Select Plan</button>
+    <div class="mem-card" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">
+      <div class="mem-tier">Tier I</div><div class="mem-name">Obsidian</div>
+      <div class="mem-price"><strong>$299</strong>per month</div>
+      <ul class="mem-perks"><li>4 reserved sessions per month</li><li>10% discount on all orders</li><li>Dedicated lounge area access</li><li>Early booking window (48 hrs)</li><li>Complimentary hookah on birthday</li></ul>
+      <button type="button" class="btn-ol" style="width:100%;font-size:9px;letter-spacing:0.4em">Select Plan</button>
     </div>
-
-    <!-- IMPERIAL -->
-    <div class="mem-card featured" onclick="scrollToBooking()">
-      <div class="badge">Most Popular</div>
-      <div class="mem-tier">Tier II</div>
-      <div class="mem-name">Imperial</div>
-      <div class="mem-price">
-        <strong>$599</strong>
-        per month
-      </div>
-      <ul class="mem-perks">
-        <li>8 reserved sessions per month</li>
-        <li>20% discount on all orders</li>
-        <li>VIP booth priority access</li>
-        <li>Early booking window (72 hrs)</li>
-        <li>Complimentary bottle on arrival</li>
-        <li>Guest privileges (2 guests)</li>
-        <li>Member-only event invitations</li>
-      </ul>
-      <button class="btn-primary" style="width:100%;font-size:9px;letter-spacing:0.4em" onclick="scrollToBooking()"><span>Select Plan</span></button>
+    <div class="mem-card feat" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">
+      <div class="mem-bdg">Most Popular</div>
+      <div class="mem-tier">Tier II</div><div class="mem-name">Imperial</div>
+      <div class="mem-price"><strong>$599</strong>per month</div>
+      <ul class="mem-perks"><li>8 reserved sessions per month</li><li>20% discount on all orders</li><li>VIP booth priority access</li><li>Early booking window (72 hrs)</li><li>Complimentary bottle on arrival</li><li>Guest privileges (2 guests)</li><li>Member-only event invitations</li></ul>
+      <button type="button" class="btn-g" style="width:100%;font-size:9px;letter-spacing:0.4em">Select Plan</button>
     </div>
-
-    <!-- ELYSIAN -->
-    <div class="mem-card" onclick="scrollToBooking()">
-      <div class="mem-tier">Tier III</div>
-      <div class="mem-name">Elysian</div>
-      <div class="mem-price">
-        <strong>$1,299</strong>
-        per month
-      </div>
-      <ul class="mem-perks">
-        <li>Unlimited sessions</li>
-        <li>30% discount on all orders</li>
-        <li>Exclusive private suite access</li>
-        <li>Instant booking at any time</li>
-        <li>Personal host & concierge</li>
-        <li>Guest privileges (5 guests)</li>
-        <li>All member events + private access</li>
-        <li>Annual private event hosting</li>
-      </ul>
-      <button class="btn-outline" style="width:100%;font-size:9px;letter-spacing:0.4em" onclick="scrollToBooking()">Select Plan</button>
+    <div class="mem-card" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">
+      <div class="mem-tier">Tier III</div><div class="mem-name">Elysian</div>
+      <div class="mem-price"><strong>$1,299</strong>per month</div>
+      <ul class="mem-perks"><li>Unlimited sessions</li><li>30% discount on all orders</li><li>Exclusive private suite access</li><li>Instant booking at any time</li><li>Personal host &amp; concierge</li><li>Guest privileges (5 guests)</li><li>All member events + private access</li><li>Annual private event hosting</li></ul>
+      <button type="button" class="btn-ol" style="width:100%;font-size:9px;letter-spacing:0.4em">Select Plan</button>
     </div>
   </div>
 </section>
 
-<!-- BOOKING -->
 <section id="booking" style="padding:0">
-  <div class="booking-header">
-    <div class="section-label" style="text-align:center">Reservation Portal</div>
-    <h2 class="section-title" style="text-align:center">Reserve your <strong>evening</strong></h2>
-    <p style="font-size:11px;color:var(--ivory-dim);letter-spacing:0.2em;text-align:center">A seamless booking experience — as refined as your night will be.</p>
+  <div class="bk-hdr">
+    <div class="s-label" style="display:inline-block">Reservation Portal</div>
+    <h2 class="s-title">Reserve your <strong>evening</strong></h2>
+    <p style="font-size:11px;color:var(--ivory-dim);letter-spacing:0.2em">A seamless booking experience — as refined as your night will be.</p>
   </div>
+  <div class="wiz-wrap">
 
-  <div class="wizard-container">
     <!-- PROGRESS -->
-    <div class="progress-bar">
-      <div class="progress-track" id="progressTrack" style="width:0%"></div>
-      <div class="step-indicator" onclick="goToStep(1)">
-        <div class="step-dot active" id="dot1">1</div>
-        <div class="step-label">Date & Time</div>
-      </div>
-      <div class="step-indicator" onclick="goToStep(2)">
-        <div class="step-dot" id="dot2">2</div>
-        <div class="step-label">Seating</div>
-      </div>
-      <div class="step-indicator" onclick="goToStep(3)">
-        <div class="step-dot" id="dot3">3</div>
-        <div class="step-label">Hookah</div>
-      </div>
-      <div class="step-indicator" onclick="goToStep(4)">
-        <div class="step-dot" id="dot4">4</div>
-        <div class="step-label">Dining</div>
-      </div>
-      <div class="step-indicator" onclick="goToStep(5)">
-        <div class="step-dot" id="dot5">5</div>
-        <div class="step-label">Confirm</div>
+    <div class="prog-outer">
+      <div class="prog-bg"></div>
+      <div class="prog-fill" id="pFill" style="width:0%"></div>
+      <div class="prog-steps">
+        <div class="prog-step act" id="ps1"><div class="prog-dot act" id="pd1">1</div><div class="prog-lbl">Date &amp; Time</div></div>
+        <div class="prog-step" id="ps2"><div class="prog-dot" id="pd2">2</div><div class="prog-lbl">Seating</div></div>
+        <div class="prog-step" id="ps3"><div class="prog-dot" id="pd3">3</div><div class="prog-lbl">Hookah</div></div>
+        <div class="prog-step" id="ps4"><div class="prog-dot" id="pd4">4</div><div class="prog-lbl">Dining</div></div>
+        <div class="prog-step" id="ps5"><div class="prog-dot" id="pd5">5</div><div class="prog-lbl">Confirm</div></div>
       </div>
     </div>
 
-    <!-- STEP 1: DATE & TIME -->
-    <div class="step-panel active" id="step1">
-      <p class="panel-title">Choose your date & time</p>
-      <p class="panel-subtitle">All reservations are 3-hour sessions · Last entry at midnight</p>
-
-      <h4 style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.4em;color:var(--gold);margin-bottom:16px">SELECT DATE</h4>
+    <!-- PANEL 1 -->
+    <div class="wpanel on" id="wp1">
+      <p class="p-title">Choose your date &amp; time</p>
+      <p class="p-sub">All reservations are 3-hour sessions · Last entry at midnight</p>
+      <div class="p-head4" style="margin-top:0">Select Date</div>
       <div class="date-grid" id="dateGrid"></div>
-
-      <h4 style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.4em;color:var(--gold);margin-bottom:16px;margin-top:40px">SELECT SESSION</h4>
-      <div class="time-grid">
-        <button type="button" class="time-btn" onclick="selectTime(this,'6:00 PM')">6:00 PM<span>Evening</span></button>
-        <button type="button" class="time-btn" onclick="selectTime(this,'7:30 PM')">7:30 PM<span>Prime Time</span></button>
-        <button type="button" class="time-btn" onclick="selectTime(this,'9:00 PM')">9:00 PM<span>Few Seats</span></button>
-        <button type="button" class="time-btn" onclick="selectTime(this,'11:00 PM')">11:00 PM<span>Late Night</span></button>
+      <div class="p-head4">Select Session Time</div>
+      <div class="time-grid" id="timeGrid">
+        <button type="button" class="t-btn" data-v="6:00 PM">6:00 PM<span class="tl">Evening</span></button>
+        <button type="button" class="t-btn" data-v="7:30 PM">7:30 PM<span class="tl">Prime Time</span></button>
+        <button type="button" class="t-btn" data-v="9:00 PM">9:00 PM<span class="tl">Limited Seats</span></button>
+        <button type="button" class="t-btn" data-v="11:00 PM">11:00 PM<span class="tl">Late Night</span></button>
       </div>
-
-      <div style="background:var(--charcoal);padding:20px 24px;border-left:2px solid var(--gold);margin-top:8px">
-        <p style="font-size:11px;color:var(--ivory-dim);line-height:1.7">
-          <span style="color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.3em">MEMBER NOTE &nbsp;·&nbsp;</span>
-          Elysian members may book up to 7 days in advance. Imperial members 72 hrs. Obsidian members 48 hrs.
-        </p>
-      </div>
-
-      <div class="wizard-nav" style="justify-content:flex-end;border-top:none">
-        <button type="button" class="btn-next" onclick="nextStep()"><span>Continue to Seating →</span></button>
+      <div class="ibox"><p><span class="ib-head">MEMBER NOTE &nbsp;·&nbsp; </span>Elysian members book up to 7 days ahead. Imperial 72 hrs. Obsidian 48 hrs.</p></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:20px">
+        <button type="button" class="btn-nxt" id="n1">Continue to Seating →</button>
       </div>
     </div>
 
-    <!-- STEP 2: SEATING -->
-    <div class="step-panel" id="step2">
-      <p class="panel-title">Select your seats</p>
-      <p class="panel-subtitle">Choose from VIP suites, premium booths, or open lounge</p>
-
-      <div class="floor-plan">
-        <div class="floor-label">Elysium Floor Plan — Lower Level</div>
-
-        <!-- VIP Suites -->
+    <!-- PANEL 2 -->
+    <div class="wpanel" id="wp2">
+      <p class="p-title">Select your seat</p>
+      <p class="p-sub">Choose from VIP suites, premium booths, or open lounge</p>
+      <div class="floor" id="floorPlan">
+        <div class="floor-lbl">Elysium Floor Plan — Lower Level</div>
         <div class="zone">
-          <div class="zone-label">♦ Private Suites (VIP)</div>
-          <div class="seats-row">
-            <div class="seat vip taken" title="Suite Monarch">
-              <div class="seat-icon">👑</div>S1
-            </div>
-            <div class="seat vip" onclick="selectSeat(this,'S2','Private Suite — Monarch','$150 surcharge')" title="Suite Monarch">
-              <div class="seat-icon">👑</div>S2
-            </div>
-            <div class="seat vip" onclick="selectSeat(this,'S3','Private Suite — Atlas','$150 surcharge')" title="Suite Atlas">
-              <div class="seat-icon">👑</div>S3
-            </div>
-            <div class="seat vip taken">
-              <div class="seat-icon">👑</div>S4
-            </div>
+          <div class="z-lbl">♦ Private Suites (VIP)</div>
+          <div class="seats">
+            <div class="seat tk vip"><div class="seat-ico">👑</div>S1</div>
+            <div class="seat vip" data-sid="S2" data-sn="Private Suite — Monarch" data-st="$150 surcharge"><div class="seat-ico">👑</div>S2</div>
+            <div class="seat vip" data-sid="S3" data-sn="Private Suite — Atlas" data-st="$150 surcharge"><div class="seat-ico">👑</div>S3</div>
+            <div class="seat tk vip"><div class="seat-ico">👑</div>S4</div>
           </div>
         </div>
-
-        <!-- VIP Booths -->
         <div class="zone">
-          <div class="zone-label">◈ Premium Booths</div>
-          <div class="seats-row">
-            <div class="seat" onclick="selectSeat(this,'B1','Premium Booth — Ivory','$80 surcharge')"><div class="seat-icon">🛋</div>B1</div>
-            <div class="seat" onclick="selectSeat(this,'B2','Premium Booth — Noir','$80 surcharge')"><div class="seat-icon">🛋</div>B2</div>
-            <div class="seat taken"><div class="seat-icon">🛋</div>B3</div>
-            <div class="seat" onclick="selectSeat(this,'B4','Premium Booth — Amber','$80 surcharge')"><div class="seat-icon">🛋</div>B4</div>
-            <div class="seat" onclick="selectSeat(this,'B5','Premium Booth — Ember','$80 surcharge')"><div class="seat-icon">🛋</div>B5</div>
-            <div class="seat taken"><div class="seat-icon">🛋</div>B6</div>
-            <div class="seat" onclick="selectSeat(this,'B7','Premium Booth — Onyx','$80 surcharge')"><div class="seat-icon">🛋</div>B7</div>
-            <div class="seat" onclick="selectSeat(this,'B8','Premium Booth — Velvet','$80 surcharge')"><div class="seat-icon">🛋</div>B8</div>
+          <div class="z-lbl">◈ Premium Booths</div>
+          <div class="seats">
+            <div class="seat" data-sid="B1" data-sn="Premium Booth — Ivory" data-st="$80 surcharge"><div class="seat-ico">🛋</div>B1</div>
+            <div class="seat" data-sid="B2" data-sn="Premium Booth — Noir" data-st="$80 surcharge"><div class="seat-ico">🛋</div>B2</div>
+            <div class="seat tk"><div class="seat-ico">🛋</div>B3</div>
+            <div class="seat" data-sid="B4" data-sn="Premium Booth — Amber" data-st="$80 surcharge"><div class="seat-ico">🛋</div>B4</div>
+            <div class="seat" data-sid="B5" data-sn="Premium Booth — Ember" data-st="$80 surcharge"><div class="seat-ico">🛋</div>B5</div>
+            <div class="seat tk"><div class="seat-ico">🛋</div>B6</div>
+            <div class="seat" data-sid="B7" data-sn="Premium Booth — Onyx" data-st="$80 surcharge"><div class="seat-ico">🛋</div>B7</div>
+            <div class="seat" data-sid="B8" data-sn="Premium Booth — Velvet" data-st="$80 surcharge"><div class="seat-ico">🛋</div>B8</div>
           </div>
         </div>
-
-        <!-- Lounge -->
         <div class="zone">
-          <div class="zone-label">◇ Open Lounge</div>
-          <div class="seats-row">
-            <div class="seat" onclick="selectSeat(this,'L1','Lounge Chair — Window','Complimentary')"><div class="seat-icon">🪑</div>L1</div>
-            <div class="seat" onclick="selectSeat(this,'L2','Lounge Chair — Center','Complimentary')"><div class="seat-icon">🪑</div>L2</div>
-            <div class="seat" onclick="selectSeat(this,'L3','Lounge Chair — Center','Complimentary')"><div class="seat-icon">🪑</div>L3</div>
-            <div class="seat taken"><div class="seat-icon">🪑</div>L4</div>
-            <div class="seat" onclick="selectSeat(this,'L5','Lounge Chair — Bar-Side','Complimentary')"><div class="seat-icon">🪑</div>L5</div>
-            <div class="seat" onclick="selectSeat(this,'L6','Lounge Chair — Corner','Complimentary')"><div class="seat-icon">🪑</div>L6</div>
-            <div class="seat taken"><div class="seat-icon">🪑</div>L7</div>
-            <div class="seat" onclick="selectSeat(this,'L8','Lounge Chair — Alcove','Complimentary')"><div class="seat-icon">🪑</div>L8</div>
-            <div class="seat" onclick="selectSeat(this,'L9','Lounge Chair — Mural Wall','Complimentary')"><div class="seat-icon">🪑</div>L9</div>
-            <div class="seat" onclick="selectSeat(this,'L10','Lounge Chair — Stage-View','Complimentary')"><div class="seat-icon">🪑</div>L10</div>
+          <div class="z-lbl">◇ Open Lounge</div>
+          <div class="seats">
+            <div class="seat" data-sid="L1" data-sn="Lounge — Window" data-st="Complimentary"><div class="seat-ico">🪑</div>L1</div>
+            <div class="seat" data-sid="L2" data-sn="Lounge — Center" data-st="Complimentary"><div class="seat-ico">🪑</div>L2</div>
+            <div class="seat" data-sid="L3" data-sn="Lounge — Center" data-st="Complimentary"><div class="seat-ico">🪑</div>L3</div>
+            <div class="seat tk"><div class="seat-ico">🪑</div>L4</div>
+            <div class="seat" data-sid="L5" data-sn="Lounge — Bar-Side" data-st="Complimentary"><div class="seat-ico">🪑</div>L5</div>
+            <div class="seat" data-sid="L6" data-sn="Lounge — Corner" data-st="Complimentary"><div class="seat-ico">🪑</div>L6</div>
+            <div class="seat tk"><div class="seat-ico">🪑</div>L7</div>
+            <div class="seat" data-sid="L8" data-sn="Lounge — Alcove" data-st="Complimentary"><div class="seat-ico">🪑</div>L8</div>
+            <div class="seat" data-sid="L9" data-sn="Lounge — Mural Wall" data-st="Complimentary"><div class="seat-ico">🪑</div>L9</div>
+            <div class="seat" data-sid="L10" data-sn="Lounge — Stage View" data-st="Complimentary"><div class="seat-ico">🪑</div>L10</div>
           </div>
         </div>
-
-        <div class="seat-legend">
-          <div class="legend-item"><div class="legend-dot available"></div>Available</div>
-          <div class="legend-item"><div class="legend-dot selected-l"></div>Selected</div>
-          <div class="legend-item"><div class="legend-dot taken-l"></div>Unavailable</div>
+        <div class="s-legend">
+          <div class="leg-item"><div class="leg-dot av"></div>Available</div>
+          <div class="leg-item"><div class="leg-dot sl"></div>Selected</div>
+          <div class="leg-item"><div class="leg-dot tk"></div>Unavailable</div>
         </div>
       </div>
-
-      <!-- Seat info -->
-      <div id="seatInfo" style="display:none;background:rgba(201,168,76,0.08);border:1px solid var(--gold);padding:20px 24px;margin-bottom:24px">
-        <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.4em;color:var(--gold);margin-bottom:8px">SELECTED SEAT</div>
-        <div id="seatInfoText" style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ivory)"></div>
-        <div id="seatInfoSub" style="font-size:11px;color:var(--ivory-dim);margin-top:4px"></div>
+      <div class="seat-bar" id="seatBar">
+        <div class="sb-name" id="sbName"></div>
+        <div class="sb-sub" id="sbSub"></div>
       </div>
-
-      <div class="wizard-nav">
-        <button type="button" class="btn-back" onclick="prevStep()">← Back</button>
-        <button type="button" class="btn-next" onclick="nextStep()"><span>Continue to Hookah →</span></button>
+      <div class="wnav">
+        <button type="button" class="btn-back" id="b2">← Back</button>
+        <button type="button" class="btn-nxt" id="n2">Continue to Hookah →</button>
       </div>
     </div>
 
-    <!-- STEP 3: HOOKAH & FLAVOR -->
-    <div class="step-panel" id="step3">
-      <p class="panel-title">Your hookah, your way</p>
-      <p class="panel-subtitle">Crafted by our master hookah artisans using only premium tobacco</p>
-
-      <div class="hookah-grid">
-        <div class="hookah-card" onclick="selectHookah(this,'Bonche Signature','Bonche','The flagship experience — medium draw, thick clouds, lasting session. Our most requested.','$85')">
-          <div class="check">✓</div>
-          <div class="hookah-brand">Bonche</div>
-          <div class="hookah-name">Signature Session</div>
-          <div class="hookah-desc">The flagship experience — medium draw, thick clouds, lasting session. Our most requested selection.</div>
-          <div class="hookah-price">$85 <span>per session</span></div>
-        </div>
-        <div class="hookah-card" onclick="selectHookah(this,'Bonche Royal Double','Bonche','Dual-hose setup, perfect for two. Royal bowl pack, extended 90-min session.','$145')">
-          <div class="check">✓</div>
-          <div class="hookah-brand">Bonche</div>
-          <div class="hookah-name">Royal Double</div>
-          <div class="hookah-desc">Dual-hose setup, perfect for two. Royal bowl pack with an extended 90-minute session.</div>
-          <div class="hookah-price">$145 <span>per session</span></div>
-        </div>
-        <div class="hookah-card" onclick="selectHookah(this,'Adalya Gold Reserve','Adalya','Turkish-crafted prestige pipe. Smooth draw, exotic flavor profile, premium base.','$95')">
-          <div class="check">✓</div>
-          <div class="hookah-brand">Adalya</div>
-          <div class="hookah-name">Gold Reserve</div>
-          <div class="hookah-desc">Turkish-crafted prestige pipe. Smooth draw, exotic flavor profile, hand-polished gold base.</div>
-          <div class="hookah-price">$95 <span>per session</span></div>
-        </div>
-        <div class="hookah-card" onclick="selectHookah(this,'Al Fakher Exclusive','Al Fakher','The world\'s most celebrated shisha. Classic preparation, timeless quality.','$75')">
-          <div class="check">✓</div>
-          <div class="hookah-brand">Al Fakher</div>
-          <div class="hookah-name">Exclusive Blend</div>
-          <div class="hookah-desc">The world's most celebrated shisha. Classic preparation, timeless quality, beloved worldwide.</div>
-          <div class="hookah-price">$75 <span>per session</span></div>
-        </div>
-        <div class="hookah-card" onclick="selectHookah(this,'Elysium Signature Mix','Elysium','Our house-exclusive blend, mixed by our resident artisan. Proprietary flavor — only here.','$110')">
-          <div class="check">✓</div>
-          <div class="hookah-brand">Elysium Exclusive</div>
-          <div class="hookah-name">House Signature</div>
-          <div class="hookah-desc">Our house-exclusive blend, mixed by our resident artisan. Proprietary flavor — available only at Elysium.</div>
-          <div class="hookah-price">$110 <span>per session</span></div>
-        </div>
-        <div class="hookah-card" onclick="selectHookah(this,'Fumari Ultra Premium','Fumari','American-crafted ultra-premium tobacco. Bold flavors, natural ingredients, clean burn.','$90')">
-          <div class="check">✓</div>
-          <div class="hookah-brand">Fumari</div>
-          <div class="hookah-name">Ultra Premium</div>
-          <div class="hookah-desc">American-crafted ultra-premium tobacco. Bold flavors, natural ingredients, incredibly clean burn.</div>
-          <div class="hookah-price">$90 <span>per session</span></div>
-        </div>
+    <!-- PANEL 3 -->
+    <div class="wpanel" id="wp3">
+      <p class="p-title">Your hookah, your way</p>
+      <p class="p-sub">Crafted by our master hookah artisans using only premium tobacco</p>
+      <div class="hk-grid" id="hkGrid">
+        <div class="hk-card" data-hn="Bonche Signature" data-hp="85"><div class="hk-chk">✓</div><div class="hk-brand">Bonche</div><div class="hk-name">Signature Session</div><div class="hk-desc">The flagship experience — medium draw, thick clouds, lasting session. Our most requested selection.</div><div class="hk-price">$85 <span>per session</span></div></div>
+        <div class="hk-card" data-hn="Bonche Royal Double" data-hp="145"><div class="hk-chk">✓</div><div class="hk-brand">Bonche</div><div class="hk-name">Royal Double</div><div class="hk-desc">Dual-hose setup, perfect for two. Royal bowl pack with an extended 90-minute session.</div><div class="hk-price">$145 <span>per session</span></div></div>
+        <div class="hk-card" data-hn="Adalya Gold Reserve" data-hp="95"><div class="hk-chk">✓</div><div class="hk-brand">Adalya</div><div class="hk-name">Gold Reserve</div><div class="hk-desc">Turkish-crafted prestige pipe. Smooth draw, exotic flavor profile, hand-polished gold base.</div><div class="hk-price">$95 <span>per session</span></div></div>
+        <div class="hk-card" data-hn="Al Fakher Exclusive" data-hp="75"><div class="hk-chk">✓</div><div class="hk-brand">Al Fakher</div><div class="hk-name">Exclusive Blend</div><div class="hk-desc">The world's most celebrated shisha. Classic preparation, timeless quality, beloved worldwide.</div><div class="hk-price">$75 <span>per session</span></div></div>
+        <div class="hk-card" data-hn="Elysium House Signature" data-hp="110"><div class="hk-chk">✓</div><div class="hk-brand">Elysium Exclusive</div><div class="hk-name">House Signature</div><div class="hk-desc">Our house-exclusive blend, mixed by our resident artisan. Proprietary flavor — only at Elysium.</div><div class="hk-price">$110 <span>per session</span></div></div>
+        <div class="hk-card" data-hn="Fumari Ultra Premium" data-hp="90"><div class="hk-chk">✓</div><div class="hk-brand">Fumari</div><div class="hk-name">Ultra Premium</div><div class="hk-desc">American-crafted ultra-premium tobacco. Bold flavors, natural ingredients, incredibly clean burn.</div><div class="hk-price">$90 <span>per session</span></div></div>
       </div>
-
-      <!-- FLAVORS -->
-      <div class="flavor-section">
+      <div class="flav-sec">
         <h4>◆ Select Your Flavor Profile</h4>
-        <div class="flavor-grid" id="flavorGrid">
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Double Apple')">Double Apple</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Blueberry Ice')">Blueberry Ice</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Peach Mint')">Peach Mint</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Grape Mint')">Grape Mint</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Watermelon')">Watermelon</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Lemon Mint')">Lemon Mint</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Mango Tango')">Mango Tango</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Rose Gold')">Rose Gold</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Pineapple Rush')">Pineapple Rush</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Kashmir Chai')">Kashmir Chai</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Gum Mint')">Gum Mint</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Mixed Fruit')">Mixed Fruit</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Cinnamon & Orange')">Cinnamon & Orange</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Melon Ice')">Melon Ice</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Passion Fruit')">Passion Fruit</button>
-          <button type="button" class="flavor-btn" onclick="selectFlavor(this,'Custom Blend +$15')">Custom Blend +$15</button>
+        <div class="flav-grid" id="flavGrid">
+          <button type="button" class="flav-btn" data-f="Double Apple">Double Apple</button>
+          <button type="button" class="flav-btn" data-f="Blueberry Ice">Blueberry Ice</button>
+          <button type="button" class="flav-btn" data-f="Peach Mint">Peach Mint</button>
+          <button type="button" class="flav-btn" data-f="Grape Mint">Grape Mint</button>
+          <button type="button" class="flav-btn" data-f="Watermelon">Watermelon</button>
+          <button type="button" class="flav-btn" data-f="Lemon Mint">Lemon Mint</button>
+          <button type="button" class="flav-btn" data-f="Mango Tango">Mango Tango</button>
+          <button type="button" class="flav-btn" data-f="Rose Gold">Rose Gold</button>
+          <button type="button" class="flav-btn" data-f="Pineapple Rush">Pineapple Rush</button>
+          <button type="button" class="flav-btn" data-f="Kashmir Chai">Kashmir Chai</button>
+          <button type="button" class="flav-btn" data-f="Gum Mint">Gum Mint</button>
+          <button type="button" class="flav-btn" data-f="Mixed Fruit">Mixed Fruit</button>
+          <button type="button" class="flav-btn" data-f="Cinnamon Orange">Cinnamon &amp; Orange</button>
+          <button type="button" class="flav-btn" data-f="Melon Ice">Melon Ice</button>
+          <button type="button" class="flav-btn" data-f="Passion Fruit">Passion Fruit</button>
+          <button type="button" class="flav-btn" data-f="Custom Blend +$15">Custom Blend +$15</button>
         </div>
       </div>
-
-      <div class="wizard-nav">
-        <button type="button" class="btn-back" onclick="prevStep()">← Back</button>
-        <button type="button" class="btn-next" onclick="nextStep()"><span>Continue to Dining →</span></button>
-      </div>
-    </div>
-
-    <!-- STEP 4: FOOD & DRINKS -->
-    <div class="step-panel" id="step4">
-      <p class="panel-title">Curate your menu</p>
-      <p class="panel-subtitle">All items delivered to your seat · Pre-ordering ensures priority preparation</p>
-
-      <div class="menu-tabs">
-        <button class="menu-tab active" onclick="switchTab(this,'tab-food')">Culinary</button>
-        <button type="button" class="menu-tab" onclick="switchTab(this,'tab-spirits')">Spirits & Wine</button>
-        <button type="button" class="menu-tab" onclick="switchTab(this,'tab-cocktails')">Cocktails</button>
-        <button type="button" class="menu-tab" onclick="switchTab(this,'tab-cigars')">Cigars</button>
-      </div>
-
-      <!-- FOOD -->
-      <div class="menu-panel active" id="tab-food">
-        <div class="menu-grid">
-          <div class="menu-item" onclick="toggleItem(this,'Wagyu Truffle Sliders',38)">
-            <div class="menu-emoji">🥩</div>
-            <div class="menu-info">
-              <div class="menu-name">Wagyu Truffle Sliders</div>
-              <div class="menu-desc">A5 wagyu, black truffle aioli, brioche</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$38</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Lobster Bruschetta',44)">
-            <div class="menu-emoji">🦞</div>
-            <div class="menu-info">
-              <div class="menu-name">Lobster Bruschetta</div>
-              <div class="menu-desc">Cold water lobster, saffron butter, toasted sourdough</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$44</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Tuna Tataki Bites',32)">
-            <div class="menu-emoji">🐟</div>
-            <div class="menu-info">
-              <div class="menu-name">Tuna Tataki Bites</div>
-              <div class="menu-desc">Seared bluefin, ponzu, sesame, micro herbs</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$32</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Caviar Blini',68)">
-            <div class="menu-emoji">🫛</div>
-            <div class="menu-info">
-              <div class="menu-name">Caviar Blini</div>
-              <div class="menu-desc">Ossetra caviar, crème fraîche, buckwheat blini</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$68</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Gold-Leaf Lamb Chops',55)">
-            <div class="menu-emoji">🍖</div>
-            <div class="menu-info">
-              <div class="menu-name">Gold-Leaf Lamb Chops</div>
-              <div class="menu-desc">Frenched rack, harissa glaze, pomegranate reduction</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$55</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Charcuterie Royale',48)">
-            <div class="menu-emoji">🧀</div>
-            <div class="menu-info">
-              <div class="menu-name">Charcuterie Royale</div>
-              <div class="menu-desc">Imported cured meats, aged cheeses, honeycomb, truffle</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$48</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SPIRITS -->
-      <div class="menu-panel" id="tab-spirits">
-        <div class="menu-grid">
-          <div class="menu-item" onclick="toggleItem(this,'Dom Pérignon 2015',320)">
-            <div class="menu-emoji">🍾</div>
-            <div class="menu-info">
-              <div class="menu-name">Dom Pérignon 2015</div>
-              <div class="menu-desc">750ml · Champagne, France</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$320</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Macallan 18 Double Cask',95)">
-            <div class="menu-emoji">🥃</div>
-            <div class="menu-info">
-              <div class="menu-name">Macallan 18 Double Cask</div>
-              <div class="menu-desc">2oz pour · Speyside Single Malt</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$95</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Louis XIII Cognac',185)">
-            <div class="menu-emoji">🥃</div>
-            <div class="menu-info">
-              <div class="menu-name">Louis XIII Cognac</div>
-              <div class="menu-desc">1oz pour · Grande Champagne, Remy Martin</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$185</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Clase Azul Ultra Tequila',120)">
-            <div class="menu-emoji">🍶</div>
-            <div class="menu-info">
-              <div class="menu-name">Clase Azul Ultra</div>
-              <div class="menu-desc">1.5oz pour · Ultra-premium añejo tequila</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$120</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- COCKTAILS -->
-      <div class="menu-panel" id="tab-cocktails">
-        <div class="menu-grid">
-          <div class="menu-item" onclick="toggleItem(this,'The Elysian',28)">
-            <div class="menu-emoji">🍸</div>
-            <div class="menu-info">
-              <div class="menu-name">The Elysian</div>
-              <div class="menu-desc">Hennessy XO, rose syrup, lychee, gold flake</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$28</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Midnight Ember',24)">
-            <div class="menu-emoji">🍹</div>
-            <div class="menu-info">
-              <div class="menu-name">Midnight Ember</div>
-              <div class="menu-desc">Mezcal, activated charcoal, smoked papaya, lime</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$24</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Golden Mist',22)">
-            <div class="menu-emoji">✨</div>
-            <div class="menu-info">
-              <div class="menu-name">Golden Mist</div>
-              <div class="menu-desc">Grey Goose, elderflower, prosecco, lemon zest</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$22</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Saffron Negroni',26)">
-            <div class="menu-emoji">🍊</div>
-            <div class="menu-info">
-              <div class="menu-name">Saffron Negroni</div>
-              <div class="menu-desc">Tanqueray 10, Campari, saffron vermouth, orange</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$26</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CIGARS -->
-      <div class="menu-panel" id="tab-cigars">
-        <div class="menu-grid">
-          <div class="menu-item" onclick="toggleItem(this,'Cohiba Behike 52',145)">
-            <div class="menu-emoji">🚬</div>
-            <div class="menu-info">
-              <div class="menu-name">Cohiba Behike 52</div>
-              <div class="menu-desc">52 ring gauge · Habano · 1 hr burn · Cuba's finest</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$145</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Arturo Fuente Opus X',95)">
-            <div class="menu-emoji">🚬</div>
-            <div class="menu-info">
-              <div class="menu-name">Arturo Fuente Opus X</div>
-              <div class="menu-desc">Perfecxion No.2 · Dominican · Full body, complex</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$95</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'Padron 1964 Anniversary',55)">
-            <div class="menu-emoji">🚬</div>
-            <div class="menu-info">
-              <div class="menu-name">Padrón 1964 Anniversary</div>
-              <div class="menu-desc">Natural · Nicaragua · Smooth, medium-full body</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$55</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-          <div class="menu-item" onclick="toggleItem(this,'My Father No.1 Torpedo',65)">
-            <div class="menu-emoji">🚬</div>
-            <div class="menu-info">
-              <div class="menu-name">My Father No.1 Torpedo</div>
-              <div class="menu-desc">Torpedo · Nicaragua · Bold, earthy, coffee notes</div>
-            </div>
-            <div class="menu-item-right">
-              <div class="menu-price">$65</div>
-              <div class="qty-control">
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,-1)">−</button>
-                <span class="qty-num">0</span>
-                <button type="button" class="qty-btn" onclick="changeQty(event,this,1)">+</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="wizard-nav">
-        <button type="button" class="btn-back" onclick="prevStep()">← Back</button>
-        <button type="button" class="btn-next" onclick="nextStep()"><span>Review & Confirm →</span></button>
+      <div class="wnav">
+        <button type="button" class="btn-back" id="b3">← Back</button>
+        <button type="button" class="btn-nxt" id="n3">Continue to Dining →</button>
       </div>
     </div>
 
-    <!-- STEP 5: CONFIRMATION -->
-    <div class="step-panel" id="step5">
-      <p class="panel-title">Review your reservation</p>
-      <p class="panel-subtitle">Please verify all details before confirming</p>
-
-      <div class="confirmation-card">
-        <div class="conf-header">
-          <div class="conf-badge">Elysium Reservation</div>
-          <div class="conf-id" id="confId">ELY-2024-0000</div>
-        </div>
-
-        <div class="conf-grid">
-          <div class="conf-item">
-            <label>Date</label>
-            <div class="value" id="confDate">—</div>
-          </div>
-          <div class="conf-item">
-            <label>Session Time</label>
-            <div class="value" id="confTime">—</div>
-          </div>
-          <div class="conf-item">
-            <label>Seat</label>
-            <div class="value" id="confSeat">—</div>
-          </div>
-          <div class="conf-item">
-            <label>Hookah</label>
-            <div class="value" id="confHookah">—</div>
-          </div>
-          <div class="conf-item">
-            <label>Flavor</label>
-            <div class="value" id="confFlavor">—</div>
-          </div>
-          <div class="conf-item">
-            <label>Pre-Orders</label>
-            <div class="value" id="confItems">None</div>
-          </div>
-        </div>
-
-        <div class="conf-total">
-          <div>
-            <label>Estimated Total</label>
-            <p style="font-size:11px;color:var(--ivory-dim);margin-top:4px">Final bill at venue · Gratuity not included</p>
-          </div>
-          <div class="total-amt" id="confTotal">$0</div>
-        </div>
-
-        <!-- GUEST INFO -->
-        <div style="background:var(--charcoal);padding:28px;margin-bottom:24px">
-          <h4 style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.4em;color:var(--gold);margin-bottom:20px">GUEST INFORMATION</h4>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-            <div>
-              <label style="font-size:9px;letter-spacing:0.3em;color:var(--ivory-dim);display:block;margin-bottom:8px">FULL NAME</label>
-              <input id="guestName" type="text" placeholder="Your name" style="width:100%;background:var(--deep);border:1px solid var(--charcoal2);color:var(--ivory);padding:12px 16px;font-family:'Raleway',sans-serif;font-size:13px;outline:none" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--charcoal2)'">
-            </div>
-            <div>
-              <label style="font-size:9px;letter-spacing:0.3em;color:var(--ivory-dim);display:block;margin-bottom:8px">EMAIL</label>
-              <input id="guestEmail" type="email" placeholder="your@email.com" style="width:100%;background:var(--deep);border:1px solid var(--charcoal2);color:var(--ivory);padding:12px 16px;font-family:'Raleway',sans-serif;font-size:13px;outline:none" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--charcoal2)'">
-            </div>
-            <div>
-              <label style="font-size:9px;letter-spacing:0.3em;color:var(--ivory-dim);display:block;margin-bottom:8px">PHONE</label>
-              <input id="guestPhone" type="tel" placeholder="+1 (000) 000-0000" style="width:100%;background:var(--deep);border:1px solid var(--charcoal2);color:var(--ivory);padding:12px 16px;font-family:'Raleway',sans-serif;font-size:13px;outline:none" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--charcoal2)'">
-            </div>
-            <div>
-              <label style="font-size:9px;letter-spacing:0.3em;color:var(--ivory-dim);display:block;margin-bottom:8px">MEMBER ID</label>
-              <input id="guestMember" type="text" placeholder="ELY-XXXX or Guest" style="width:100%;background:var(--deep);border:1px solid var(--charcoal2);color:var(--ivory);padding:12px 16px;font-family:'Raleway',sans-serif;font-size:13px;outline:none" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--charcoal2)'">
-            </div>
-          </div>
-          <div style="margin-top:16px">
-            <label style="font-size:9px;letter-spacing:0.3em;color:var(--ivory-dim);display:block;margin-bottom:8px">SPECIAL REQUESTS</label>
-            <textarea id="guestNotes" placeholder="Allergies, occasions, specific preferences..." rows="3" style="width:100%;background:var(--deep);border:1px solid var(--charcoal2);color:var(--ivory);padding:12px 16px;font-family:'Raleway',sans-serif;font-size:13px;outline:none;resize:vertical" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--charcoal2)'"></textarea>
-          </div>
-        </div>
-
-        <div style="font-size:10px;color:var(--ivory-dim);line-height:1.9;text-align:center;padding:0 20px">
-          By confirming, you agree to Elysium's reservation policy. A credit card hold of $100 per seat is required. Cancellations accepted up to 6 hours prior to your session.
+    <!-- PANEL 4 -->
+    <div class="wpanel" id="wp4">
+      <p class="p-title">Curate your menu</p>
+      <p class="p-sub">All items delivered to your seat · Pre-ordering ensures priority preparation</p>
+      <div class="m-tabs" id="mTabs">
+        <button type="button" class="m-tab on" data-t="food">Culinary</button>
+        <button type="button" class="m-tab" data-t="spirits">Spirits &amp; Wine</button>
+        <button type="button" class="m-tab" data-t="cocktails">Cocktails</button>
+        <button type="button" class="m-tab" data-t="cigars">Cigars</button>
+      </div>
+      <div class="m-panel on" id="mt-food">
+        <div class="m-grid">
+          <div class="m-item" data-mi="Wagyu Truffle Sliders" data-mp="38"><div class="m-emo">🥩</div><div class="m-info"><div class="m-name">Wagyu Truffle Sliders</div><div class="m-desc">A5 wagyu, black truffle aioli, brioche</div></div><div class="m-right"><div class="m-price">$38</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Lobster Bruschetta" data-mp="44"><div class="m-emo">🦞</div><div class="m-info"><div class="m-name">Lobster Bruschetta</div><div class="m-desc">Cold water lobster, saffron butter, toasted sourdough</div></div><div class="m-right"><div class="m-price">$44</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Tuna Tataki Bites" data-mp="32"><div class="m-emo">🐟</div><div class="m-info"><div class="m-name">Tuna Tataki Bites</div><div class="m-desc">Seared bluefin, ponzu, sesame, micro herbs</div></div><div class="m-right"><div class="m-price">$32</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Caviar Blini" data-mp="68"><div class="m-emo">🫛</div><div class="m-info"><div class="m-name">Caviar Blini</div><div class="m-desc">Ossetra caviar, crème fraîche, buckwheat blini</div></div><div class="m-right"><div class="m-price">$68</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Gold-Leaf Lamb Chops" data-mp="55"><div class="m-emo">🍖</div><div class="m-info"><div class="m-name">Gold-Leaf Lamb Chops</div><div class="m-desc">Frenched rack, harissa glaze, pomegranate reduction</div></div><div class="m-right"><div class="m-price">$55</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Charcuterie Royale" data-mp="48"><div class="m-emo">🧀</div><div class="m-info"><div class="m-name">Charcuterie Royale</div><div class="m-desc">Imported cured meats, aged cheeses, honeycomb, truffle</div></div><div class="m-right"><div class="m-price">$48</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
         </div>
       </div>
+      <div class="m-panel" id="mt-spirits">
+        <div class="m-grid">
+          <div class="m-item" data-mi="Dom Pérignon 2015" data-mp="320"><div class="m-emo">🍾</div><div class="m-info"><div class="m-name">Dom Pérignon 2015</div><div class="m-desc">750ml · Champagne, France</div></div><div class="m-right"><div class="m-price">$320</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Macallan 18 Double Cask" data-mp="95"><div class="m-emo">🥃</div><div class="m-info"><div class="m-name">Macallan 18 Double Cask</div><div class="m-desc">2oz pour · Speyside Single Malt</div></div><div class="m-right"><div class="m-price">$95</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Louis XIII Cognac" data-mp="185"><div class="m-emo">🥃</div><div class="m-info"><div class="m-name">Louis XIII Cognac</div><div class="m-desc">1oz pour · Grande Champagne, Remy Martin</div></div><div class="m-right"><div class="m-price">$185</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Clase Azul Ultra Tequila" data-mp="120"><div class="m-emo">🍶</div><div class="m-info"><div class="m-name">Clase Azul Ultra</div><div class="m-desc">1.5oz pour · Ultra-premium añejo tequila</div></div><div class="m-right"><div class="m-price">$120</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+        </div>
+      </div>
+      <div class="m-panel" id="mt-cocktails">
+        <div class="m-grid">
+          <div class="m-item" data-mi="The Elysian" data-mp="28"><div class="m-emo">🍸</div><div class="m-info"><div class="m-name">The Elysian</div><div class="m-desc">Hennessy XO, rose syrup, lychee, gold flake</div></div><div class="m-right"><div class="m-price">$28</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Midnight Ember" data-mp="24"><div class="m-emo">🍹</div><div class="m-info"><div class="m-name">Midnight Ember</div><div class="m-desc">Mezcal, activated charcoal, smoked papaya, lime</div></div><div class="m-right"><div class="m-price">$24</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Golden Mist" data-mp="22"><div class="m-emo">✨</div><div class="m-info"><div class="m-name">Golden Mist</div><div class="m-desc">Grey Goose, elderflower, prosecco, lemon zest</div></div><div class="m-right"><div class="m-price">$22</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Saffron Negroni" data-mp="26"><div class="m-emo">🍊</div><div class="m-info"><div class="m-name">Saffron Negroni</div><div class="m-desc">Tanqueray 10, Campari, saffron vermouth, orange</div></div><div class="m-right"><div class="m-price">$26</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+        </div>
+      </div>
+      <div class="m-panel" id="mt-cigars">
+        <div class="m-grid">
+          <div class="m-item" data-mi="Cohiba Behike 52" data-mp="145"><div class="m-emo">🚬</div><div class="m-info"><div class="m-name">Cohiba Behike 52</div><div class="m-desc">52 ring gauge · Habano · Cuba's finest · 1hr burn</div></div><div class="m-right"><div class="m-price">$145</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Arturo Fuente Opus X" data-mp="95"><div class="m-emo">🚬</div><div class="m-info"><div class="m-name">Arturo Fuente Opus X</div><div class="m-desc">Perfecxion No.2 · Dominican · Full body, complex</div></div><div class="m-right"><div class="m-price">$95</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="Padrón 1964 Anniversary" data-mp="55"><div class="m-emo">🚬</div><div class="m-info"><div class="m-name">Padrón 1964 Anniversary</div><div class="m-desc">Natural · Nicaragua · Smooth, medium-full body</div></div><div class="m-right"><div class="m-price">$55</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+          <div class="m-item" data-mi="My Father No.1 Torpedo" data-mp="65"><div class="m-emo">🚬</div><div class="m-info"><div class="m-name">My Father No.1 Torpedo</div><div class="m-desc">Torpedo · Nicaragua · Bold, earthy, coffee notes</div></div><div class="m-right"><div class="m-price">$65</div><div class="qty-c"><button type="button" class="q-btn" data-a="d">−</button><span class="q-num">0</span><button type="button" class="q-btn" data-a="i">+</button></div></div></div>
+        </div>
+      </div>
+      <div class="wnav">
+        <button type="button" class="btn-back" id="b4">← Back</button>
+        <button type="button" class="btn-nxt" id="n4">Review &amp; Confirm →</button>
+      </div>
+    </div>
 
-      <div class="wizard-nav">
-        <button type="button" class="btn-back" onclick="prevStep()">← Back</button>
-        <button type="button" class="btn-next" onclick="confirmReservation()" style="padding:15px 56px"><span>✦ Confirm Reservation</span></button>
+    <!-- PANEL 5 -->
+    <div class="wpanel" id="wp5">
+      <p class="p-title">Review your reservation</p>
+      <p class="p-sub">Please verify all details before confirming</p>
+      <div class="cf-card">
+        <div class="cf-head">
+          <div class="cf-bdg">Elysium Reservation</div>
+          <div class="cf-id" id="cfId">ELY-2024-0000</div>
+        </div>
+        <div class="cf-grid">
+          <div class="cf-item"><label>Date</label><div class="cv" id="cfDate">—</div></div>
+          <div class="cf-item"><label>Session Time</label><div class="cv" id="cfTime">—</div></div>
+          <div class="cf-item"><label>Seat</label><div class="cv" id="cfSeat">—</div></div>
+          <div class="cf-item"><label>Hookah</label><div class="cv" id="cfHookah">—</div></div>
+          <div class="cf-item"><label>Flavor</label><div class="cv" id="cfFlavor">—</div></div>
+          <div class="cf-item"><label>Pre-Orders</label><div class="cv" id="cfItems">None</div></div>
+        </div>
+        <div class="cf-tot">
+          <div><label>Estimated Total</label><p style="font-size:11px;color:var(--ivory-dim);margin-top:4px">Final bill at venue · Gratuity not included</p></div>
+          <div class="tn" id="cfTotal">$0</div>
+        </div>
+        <div class="g-block">
+          <h4>Guest Information</h4>
+          <div class="g-fields">
+            <div class="fw"><label>Full Name</label><input type="text" id="gName" placeholder="Your name"></div>
+            <div class="fw"><label>Email</label><input type="email" id="gEmail" placeholder="your@email.com"></div>
+            <div class="fw"><label>Phone</label><input type="tel" id="gPhone" placeholder="+1 (000) 000-0000"></div>
+            <div class="fw"><label>Member ID</label><input type="text" id="gMember" placeholder="ELY-XXXX or Guest"></div>
+            <div class="fw full"><label>Special Requests</label><textarea id="gNotes" rows="3" placeholder="Allergies, occasions, specific preferences..."></textarea></div>
+          </div>
+        </div>
+        <p class="cf-note">By confirming, you agree to Elysium's reservation policy. A $100 credit card hold is required per seat. Cancellations accepted up to 6 hours prior.</p>
+      </div>
+      <div class="wnav">
+        <button type="button" class="btn-back" id="b5">← Back</button>
+        <button type="button" class="btn-nxt" id="btnConfirm" style="padding:14px 50px">✦ Confirm Reservation</button>
       </div>
     </div>
 
     <!-- SUCCESS -->
-    <div class="success-screen" id="successScreen">
-      <div class="success-icon">✦</div>
-      <h2 class="success-title">Your evening is reserved.</h2>
+    <div class="suc-scr" id="sucScr">
+      <div class="suc-ico">✦</div>
+      <h2 class="suc-ttl">Your evening is reserved.</h2>
       <p style="font-size:12px;color:var(--ivory-dim);letter-spacing:0.2em;margin-bottom:8px">Reservation confirmed</p>
-      <div class="reservation-code" id="successCode">ELY-2024-0000</div>
-      <p style="font-size:11px;color:var(--ivory-dim);line-height:2;max-width:480px;margin:0 auto 40px">
-        A confirmation has been sent to your email. Your personal host will reach out 2 hours before your session. We look forward to welcoming you to Elysium.
-      </p>
-      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
-        <button class="btn-primary" onclick="resetBooking()"><span>Make Another Reservation</span></button>
-        <button class="btn-outline" onclick="window.print()">Print Confirmation</button>
+      <div class="res-code" id="sucCode">ELY-2024-0000</div>
+      <p style="font-size:11px;color:var(--ivory-dim);line-height:2;max-width:460px;margin:0 auto 32px">A confirmation has been sent to your email. Your personal host will reach out 2 hours before your session. We look forward to welcoming you.</p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+        <button type="button" class="btn-g" onclick="location.reload()">Make Another Reservation</button>
+        <button type="button" class="btn-ol" onclick="window.print()">Print Confirmation</button>
       </div>
     </div>
-  </div>
+
+  </div><!-- /wiz-wrap -->
 </section>
 
-<!-- FEATURES -->
 <section id="features" style="padding:0">
-  <div class="feat-visual">🪄🌿🎶</div>
-  <div class="feat-content">
-    <div class="section-label">Why Elysium</div>
-    <h2 class="section-title">The finest lounge<br><strong>in Texas</strong></h2>
-    <div class="gold-line"></div>
+  <div class="feat-vis">🪄🌿🎶</div>
+  <div class="feat-c">
+    <div class="s-label">Why Elysium</div>
+    <h2 class="s-title">The finest lounge<br><strong>in Texas</strong></h2>
+    <div class="g-line"></div>
     <ul class="feat-list">
-      <li>
-        <div class="feat-num">01</div>
-        <div class="feat-text">
-          <h4>World-Class Hookah Partners</h4>
-          <p>Exclusive relationships with Bonche, Adalya, Al Fakher, and Fumari ensure only the finest tobacco reaches your pipe.</p>
-        </div>
-      </li>
-      <li>
-        <div class="feat-num">02</div>
-        <div class="feat-text">
-          <h4>Executive Concierge Service</h4>
-          <p>Your dedicated host remembers your preferences, ensures your evening flows flawlessly, and anticipates your needs before you voice them.</p>
-        </div>
-      </li>
-      <li>
-        <div class="feat-num">03</div>
-        <div class="feat-text">
-          <h4>Private Event Hosting</h4>
-          <p>Exclusive buyouts available for celebrations, corporate events, and private gatherings with fully bespoke menus and service.</p>
-        </div>
-      </li>
-      <li>
-        <div class="feat-num">04</div>
-        <div class="feat-text">
-          <h4>Digital-First Membership</h4>
-          <p>Seamless mobile reservations, instant booking confirmations, and full session management from your device.</p>
-        </div>
-      </li>
+      <li><div class="feat-n">01</div><div class="feat-t"><h4>World-Class Hookah Partners</h4><p>Exclusive relationships with Bonche, Adalya, Al Fakher, and Fumari ensure only the finest tobacco reaches your pipe.</p></div></li>
+      <li><div class="feat-n">02</div><div class="feat-t"><h4>Executive Concierge Service</h4><p>Your dedicated host remembers your preferences, ensures your evening flows flawlessly, and anticipates your needs.</p></div></li>
+      <li><div class="feat-n">03</div><div class="feat-t"><h4>Private Event Hosting</h4><p>Exclusive buyouts for celebrations, corporate events, and private gatherings with fully bespoke menus and service.</p></div></li>
+      <li><div class="feat-n">04</div><div class="feat-t"><h4>Digital-First Membership</h4><p>Seamless mobile reservations, instant booking confirmations, and full session management from your device.</p></div></li>
     </ul>
   </div>
 </section>
 
-<!-- PARTNERS -->
 <section id="partners">
-  <div class="section-label" style="text-align:center">Our Partners</div>
-  <h2 class="section-title" style="text-align:center">Partnered with the <strong>best</strong></h2>
-  <div class="partners-row">
-    <div class="partner-badge">Bonche</div>
-    <div class="partner-badge">Adalya</div>
-    <div class="partner-badge">Al Fakher</div>
-    <div class="partner-badge">Fumari</div>
-    <div class="partner-badge">Tangiers</div>
-    <div class="partner-badge">Starbuzz</div>
+  <div class="s-label" style="display:inline-block">Our Partners</div>
+  <h2 class="s-title">Partnered with the <strong>best</strong></h2>
+  <div class="p-row">
+    <div class="p-badge">Bonche</div><div class="p-badge">Adalya</div><div class="p-badge">Al Fakher</div>
+    <div class="p-badge">Fumari</div><div class="p-badge">Tangiers</div><div class="p-badge">Starbuzz</div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  <div class="footer-top">
-    <div class="footer-brand">
+  <div class="ft">
+    <div class="fb">
       <h3>Elysium</h3>
       <p>Where the finest gather. A private members lounge in Dallas, Texas — setting the standard for luxury hookah, fine spirits, and elevated social experience.</p>
     </div>
-    <div class="footer-col">
-      <h4>Navigate</h4>
-      <a href="#experience">Experience</a>
-      <a href="#membership">Membership</a>
-      <a href="#booking">Book Now</a>
-      <a href="#partners">Partners</a>
-    </div>
-    <div class="footer-col">
-      <h4>Members</h4>
-      <a href="#">Member Login</a>
-      <a href="#">My Reservations</a>
-      <a href="#">Preferences</a>
-      <a href="#">Events</a>
-    </div>
-    <div class="footer-col">
-      <h4>Contact</h4>
-      <a href="#"><span class="__cf_email__" data-cfemail="3d4f584e584f4b5c495452534e7d5851444e544850515248535a58135e5250">[email&#160;protected]</span></a>
-      <a href="#">+1 (214) 000-0000</a>
-      <a href="#">Dallas, Texas</a>
-      <a href="#">Private Events</a>
-    </div>
+    <div class="fc"><h4>Navigate</h4><a href="#experience">Experience</a><a href="#membership">Membership</a><a href="#booking">Book Now</a><a href="#partners">Partners</a></div>
+    <div class="fc"><h4>Members</h4><a href="#">Member Login</a><a href="#">My Reservations</a><a href="#">Preferences</a><a href="#">Events</a></div>
+    <div class="fc"><h4>Contact</h4><a href="#">reservations@elysiumlounge.com</a><a href="#">+1 (214) 000-0000</a><a href="#">Dallas, Texas</a><a href="#">Private Events</a></div>
   </div>
-  <div class="footer-bottom">
+  <div class="fbot">
     <p>© 2024 Elysium Hookah Lounge. All rights reserved.</p>
     <p style="letter-spacing:0.3em;font-size:9px;color:rgba(201,168,76,0.3)">LUXURY · EXCLUSIVITY · RITUAL</p>
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // ── SMOKE PARTICLES ──
-  const hero = document.getElementById('hero');
-  for (let i = 0; i < 8; i++) {
-    const p = document.createElement('div');
-    p.className = 'smoke-particle';
-    const size = 100 + Math.random() * 200;
-    p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*10}s`;
-    hero.appendChild(p);
-  }
+<script>
+// ── STATE ──
+var S={date:'',time:'',seatId:'',seat:'',hookah:'',hookahPrice:0,flavor:'',orders:{}};
+var step=1;
 
-  // ── DATE GRID ──
-  const dateGrid = document.getElementById('dateGrid');
-  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-  const today = new Date();
-  for (let i = 0; i < 14; i++) {
-    (function(index) {
-      const d = new Date(today);
-      d.setDate(today.getDate() + index);
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'date-btn';
-      btn.innerHTML = `<div class="date-day">${days[d.getDay()]}</div><div class="date-num">${d.getDate()}</div>`;
-      const dateStr = days[d.getDay()] + ' ' + d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.date-btn').forEach(function(b) { b.classList.remove('selected'); });
-        btn.classList.add('selected');
-        booking.date = dateStr;
+// ── SMOKE ──
+(function(){
+  var h=document.getElementById('hero');
+  for(var i=0;i<8;i++){
+    var el=document.createElement('div');
+    el.className='smoke-p';
+    var sz=100+Math.random()*200;
+    el.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(Math.random()*100)+'%;animation-duration:'+(8+Math.random()*12)+'s;animation-delay:'+(-Math.random()*8)+'s;';
+    h.appendChild(el);
+  }
+})();
+
+// ── BUILD DATE GRID ──
+(function(){
+  var g=document.getElementById('dateGrid');
+  var dn=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  var now=new Date();
+  for(var i=0;i<14;i++){
+    (function(i){
+      var d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i);
+      var b=document.createElement('button');
+      b.type='button';
+      b.className='d-btn';
+      b.innerHTML='<span class="d-day">'+dn[d.getDay()]+'</span><span class="d-num">'+d.getDate()+'</span>';
+      var lbl=dn[d.getDay()]+' '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      b.addEventListener('click',function(){
+        [].forEach.call(document.querySelectorAll('.d-btn'),function(x){x.classList.remove('on');});
+        b.classList.add('on');
+        S.date=lbl;
       });
-      dateGrid.appendChild(btn);
+      g.appendChild(b);
     })(i);
   }
+})();
 
-  // ── STATE ──
-  let currentStep = 1;
-  const totalSteps = 5;
-  const booking = { date:'', time:'', seat:'', hookah:'', hookahPrice:0, flavor:'', items:[], total:0 };
-
-  function scrollToBooking() {
-    document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+// ── PROGRESS ──
+function setStep(n){
+  step=n;
+  var pct=((n-1)/4)*100;
+  document.getElementById('pFill').style.width=pct+'%';
+  for(var i=1;i<=5;i++){
+    var dot=document.getElementById('pd'+i);
+    var ps=document.getElementById('ps'+i);
+    dot.classList.remove('act','done');
+    ps.classList.remove('act');
+    if(i<n){dot.classList.add('done');dot.textContent='✓';}
+    else if(i===n){dot.classList.add('act');dot.textContent=i;ps.classList.add('act');}
+    else{dot.textContent=i;}
   }
+}
 
-  function selectTime(btn, val) {
-    document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('selected'));
-    btn.classList.add('selected');
-    booking.time = val;
-  }
+// ── SHOW PANEL ──
+function goTo(n){
+  if(n===5) buildConfirm();
+  [].forEach.call(document.querySelectorAll('.wpanel'),function(p){p.classList.remove('on');});
+  document.getElementById('wp'+n).classList.add('on');
+  setStep(n);
+  document.getElementById('booking').scrollIntoView({behavior:'smooth'});
+}
 
-  function selectSeat(el, id, name, note) {
-    document.querySelectorAll('.seat').forEach(s=>s.classList.remove('selected'));
-    el.classList.add('selected');
-    booking.seat = id + ' — ' + name;
-    document.getElementById('seatInfo').style.display = 'block';
-    document.getElementById('seatInfoText').textContent = name;
-    document.getElementById('seatInfoSub').textContent = id + ' · ' + note;
-  }
+// ── TIME ──
+document.getElementById('timeGrid').addEventListener('click',function(e){
+  var b=e.target.closest('.t-btn');
+  if(!b)return;
+  [].forEach.call(document.querySelectorAll('.t-btn'),function(x){x.classList.remove('on');});
+  b.classList.add('on');
+  S.time=b.dataset.v;
+});
 
-  function selectHookah(el, name, brand, desc, price) {
-    document.querySelectorAll('.hookah-card').forEach(c=>c.classList.remove('selected'));
-    el.classList.add('selected');
-    booking.hookah = name;
-    booking.hookahPrice = parseInt(price.replace('$',''));
-  }
+// ── SEATS ──
+document.getElementById('floorPlan').addEventListener('click',function(e){
+  var s=e.target.closest('.seat');
+  if(!s||s.classList.contains('tk'))return;
+  [].forEach.call(document.querySelectorAll('.seat'),function(x){x.classList.remove('on');});
+  s.classList.add('on');
+  S.seatId=s.dataset.sid;
+  S.seat=s.dataset.sn;
+  var bar=document.getElementById('seatBar');
+  document.getElementById('sbName').textContent=s.dataset.sn;
+  document.getElementById('sbSub').textContent=s.dataset.sid+' · '+s.dataset.st;
+  bar.style.display='block';
+});
 
-  function selectFlavor(btn, name) {
-    document.querySelectorAll('.flavor-btn').forEach(b=>b.classList.remove('selected'));
-    btn.classList.add('selected');
-    booking.flavor = name;
-  }
+// ── HOOKAH ──
+document.getElementById('hkGrid').addEventListener('click',function(e){
+  var c=e.target.closest('.hk-card');
+  if(!c)return;
+  [].forEach.call(document.querySelectorAll('.hk-card'),function(x){x.classList.remove('on');});
+  c.classList.add('on');
+  S.hookah=c.dataset.hn;
+  S.hookahPrice=parseInt(c.dataset.hp);
+});
 
-  function switchTab(btn, tabId) {
-    document.querySelectorAll('.menu-tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.menu-panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(tabId).classList.add('active');
-  }
+// ── FLAVORS ──
+document.getElementById('flavGrid').addEventListener('click',function(e){
+  var b=e.target.closest('.flav-btn');
+  if(!b)return;
+  [].forEach.call(document.querySelectorAll('.flav-btn'),function(x){x.classList.remove('on');});
+  b.classList.add('on');
+  S.flavor=b.dataset.f;
+});
 
-  function toggleItem(el, name, price) {
-    el.classList.toggle('selected');
-    if (el.classList.contains('selected')) {
-      booking.items.push({name, price, qty:1});
-    } else {
-      booking.items = booking.items.filter(i=>i.name!==name);
-    }
-  }
+// ── MENU TABS ──
+document.getElementById('mTabs').addEventListener('click',function(e){
+  var b=e.target.closest('.m-tab');
+  if(!b)return;
+  [].forEach.call(document.querySelectorAll('.m-tab'),function(x){x.classList.remove('on');});
+  [].forEach.call(document.querySelectorAll('.m-panel'),function(x){x.classList.remove('on');});
+  b.classList.add('on');
+  document.getElementById('mt-'+b.dataset.t).classList.add('on');
+});
 
-  function changeQty(e, btn, delta) {
-    e.stopPropagation();
-    const num = btn.parentElement.querySelector('.qty-num');
-    let q = parseInt(num.textContent) + delta;
-    if (q < 0) q = 0;
-    num.textContent = q;
-    const item = btn.closest('.menu-item');
-    const nameEl = item.querySelector('.menu-name');
-    const priceEl = item.querySelector('.menu-price');
-    const name = nameEl.textContent;
-    const price = parseInt(priceEl.textContent.replace('$',''));
-    booking.items = booking.items.filter(i=>i.name!==name);
-    if (q > 0) { booking.items.push({name, price, qty:q}); item.classList.add('selected'); }
-    else { item.classList.remove('selected'); }
-  }
+// ── QTY (event delegation on whole booking section) ──
+document.querySelector('#booking .wiz-wrap').addEventListener('click',function(e){
+  var qb=e.target.closest('.q-btn');
+  if(!qb)return;
+  e.stopPropagation();
+  var ctrl=qb.closest('.qty-c');
+  var numEl=ctrl.querySelector('.q-num');
+  var n=parseInt(numEl.textContent)||0;
+  if(qb.dataset.a==='i') n++;
+  else if(qb.dataset.a==='d'&&n>0) n--;
+  numEl.textContent=n;
+  var item=qb.closest('.m-item');
+  var name=item.dataset.mi;
+  var price=parseInt(item.dataset.mp);
+  if(n>0){S.orders[name]={price:price,qty:n};item.classList.add('hi');}
+  else{delete S.orders[name];item.classList.remove('hi');}
+});
 
-  function updateProgress() {
-    const pct = ((currentStep - 1) / (totalSteps - 1)) * 100;
-    document.getElementById('progressTrack').style.width = pct + '%';
-    for (let i = 1; i <= totalSteps; i++) {
-      const dot = document.getElementById('dot' + i);
-      dot.classList.remove('active','completed');
-      if (i < currentStep) dot.classList.add('completed');
-      else if (i === currentStep) dot.classList.add('active');
-    }
-  }
+// ── NAV BUTTONS ──
+document.getElementById('n1').addEventListener('click',function(){goTo(2);});
+document.getElementById('b2').addEventListener('click',function(){goTo(1);});
+document.getElementById('n2').addEventListener('click',function(){goTo(3);});
+document.getElementById('b3').addEventListener('click',function(){goTo(2);});
+document.getElementById('n3').addEventListener('click',function(){goTo(4);});
+document.getElementById('b4').addEventListener('click',function(){goTo(3);});
+document.getElementById('n4').addEventListener('click',function(){goTo(5);});
+document.getElementById('b5').addEventListener('click',function(){goTo(4);});
+document.getElementById('btnConfirm').addEventListener('click',function(){doConfirm();});
 
-  function goToStep(n) {
-    if (n > currentStep) return;
-    document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
-    document.getElementById('step'+n).classList.add('active');
-    currentStep = n;
-    updateProgress();
-  }
+// ── BUILD CONFIRM ──
+function buildConfirm(){
+  var id='ELY-'+new Date().getFullYear()+'-'+Math.floor(1000+Math.random()*9000);
+  document.getElementById('cfId').textContent=id;
+  document.getElementById('sucCode').textContent=id;
+  document.getElementById('cfDate').textContent=S.date||'Not selected';
+  document.getElementById('cfTime').textContent=S.time||'Not selected';
+  document.getElementById('cfSeat').textContent=S.seatId||'—';
+  document.getElementById('cfHookah').textContent=S.hookah||'—';
+  document.getElementById('cfFlavor').textContent=S.flavor||'—';
+  var keys=Object.keys(S.orders);
+  document.getElementById('cfItems').textContent=keys.length?keys.map(function(k){return k+' ×'+S.orders[k].qty;}).join(', '):'None';
+  var total=S.hookahPrice;
+  keys.forEach(function(k){total+=S.orders[k].price*S.orders[k].qty;});
+  document.getElementById('cfTotal').textContent='$'+total.toLocaleString();
+}
 
-  function nextStep() {
-    if (currentStep >= 5) return;
-    currentStep++;
-    if (currentStep === 5) populateConfirmation();
-    document.querySelectorAll('.step-panel').forEach(function(p) { p.classList.remove('active'); });
-    document.getElementById('step' + currentStep).classList.add('active');
-    updateProgress();
-    document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-  }
-
-  function prevStep() {
-    if (currentStep <= 1) return;
-    currentStep--;
-    document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
-    document.getElementById('step'+currentStep).classList.add('active');
-    updateProgress();
-    document.getElementById('booking').scrollIntoView({ behavior:'smooth' });
-  }
-
-  function populateConfirmation() {
-    let total = booking.hookahPrice;
-    booking.items.forEach(i => total += i.price * i.qty);
-    booking.total = total;
-    document.getElementById('confDate').textContent = booking.date || 'Not selected';
-    document.getElementById('confTime').textContent = booking.time || 'Not selected';
-    document.getElementById('confSeat').textContent = booking.seat ? booking.seat.split(' — ')[0] : '—';
-    document.getElementById('confHookah').textContent = booking.hookah || '—';
-    document.getElementById('confFlavor').textContent = booking.flavor || '—';
-    document.getElementById('confItems').textContent = booking.items.length ? booking.items.map(i=>`${i.name} ×${i.qty}`).join(', ') : 'None';
-    document.getElementById('confTotal').textContent = '$' + total.toLocaleString();
-    const id = 'ELY-' + new Date().getFullYear() + '-' + Math.floor(1000+Math.random()*9000);
-    document.getElementById('confId').textContent = id;
-    document.getElementById('successCode').textContent = id;
-  }
-
-  function confirmReservation() {
-    const name = document.getElementById('guestName').value.trim();
-    const email = document.getElementById('guestEmail').value.trim();
-    if (!name || !email) {
-      alert('Please enter your name and email to confirm.');
-      return;
-    }
-    document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
-    document.getElementById('successScreen').classList.add('active');
-    updateProgress();
-    document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-    // update all dots to completed
-    for (let i = 1; i <= totalSteps; i++) {
-      const dot = document.getElementById('dot'+i);
-      dot.classList.remove('active');
-      dot.classL
+// ── CONFIRM ──
+function doConfirm(){
+  var nm=document.getElementById('gName').value.trim();
+  var em=document.getElementById('gEmail').value.trim();
+  if(!nm||!em){alert('Please enter your name and email to confirm.');return;}
+  [].forEach.call(document.querySelectorAll('.wpanel'),function(p){p.classList.remove('on');});
+  document.getElementById('sucScr').classList.add('on');
+  for(var i=1;i<=5;i++){var d=document.getElementById('pd'+i);d.classList.remove('act');d.classList.add('done');d.textContent='✓';}
+  document.getElementById('pFill').style.width='100%';
+  document.getElementById('booking').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
